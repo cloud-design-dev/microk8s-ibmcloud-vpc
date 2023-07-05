@@ -1,0 +1,16 @@
+---
+- name: 'Deploy microk8s'
+  hosts: microk8s_HA, microk8s_WORKERS
+  roles:
+    - role: istvano.microk8s
+      vars:
+        microk8s_plugins:
+          dns: true
+          ingress: true
+          metallb: true
+          registry: true
+          observability: true
+        microk8s_enable_HA: true
+        microk8s_group_HA: "microk8s_HA"
+        microk8s_group_WORKERS: "microk8s_WORKERS"
+        add_workers_to_hostfile: true

@@ -1,0 +1,6 @@
+---
+- name: 'Attempt connection to all hosts'
+  hosts: all
+  tasks:
+    - name: Ping hosts 
+      ansible.builtin.ping:

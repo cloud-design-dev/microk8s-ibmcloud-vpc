@@ -1,0 +1,4 @@
+---
+  - import_playbook: update-systems.yml
+  - import_playbook: install-logging.yml
+  - import_playbook: install-monitoring.yml
