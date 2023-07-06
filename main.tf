@@ -40,7 +40,7 @@ module "vpc" {
   vpc_name                    = "${local.prefix}-vpc"
   resource_group_id           = module.resource_group.resource_group_id
   classic_access              = var.classic_access
-  default_address_prefix      = var.default_address_prefix
+  default_address_prefix       = var.default_address_prefix
   default_network_acl_name    = "${local.prefix}-default-network-acl"
   default_security_group_name = "${local.prefix}-default-security-group"
   default_routing_table_name  = "${local.prefix}-default-routing-table"
