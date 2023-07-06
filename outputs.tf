@@ -1,11 +1,17 @@
-output "bastion_ssh_command" {
-  depends_on  = [ibm_is_instance.bastion]
-  description = "Connection info for the IBM Cloud Bastion Instance"
-  value       = "ssh root@${ibm_is_floating_ip.bastion.address}"
-}
-
-output "ansible_playbook_command" {
+output "step_01_ping_hosts" {
   depends_on  = [module.ansible]
   description = "Run the following playbook to ping all hosts and check connectivity"
   value       = "ansible-playbook -i ansible/inventory ansible/playbooks/ping-all.yml"
+}
+
+output "step_02_update_hosts" {
+  depends_on  = [module.ansible]
+  description = "Run the following playbook to update systems and install obersevability tools"
+  value       = "ansible-playbook -i ansible/inventory ansible/playbooks/main.yml"
+}
+
+output "step_03_deploy_cluster" {
+  depends_on  = [module.ansible]
+  description = "Run the following playbook to create the microk8s cluster"
+  value       = "ansible-playbook -i ansible/inventory ansible/playbooks/deploy-microk8s.yml"
 }
