@@ -163,6 +163,16 @@ variable "frontend_rules" {
       }
     },
     {
+      name       = "inbound-cluster-join"
+      direction  = "inbound"
+      remote     = "0.0.0.0/0"
+      ip_version = "ipv4"
+      tcp = {
+        port_min = 25000
+        port_max = 25000
+      }
+    },
+    {
       name       = "inbound-icmp"
       direction  = "inbound"
       remote     = "0.0.0.0/0"
