@@ -152,6 +152,7 @@ variable "frontend_rules" {
 
 
 variable "number_of_addresses" {
-  type    = number
-  default = 128
+  description = "Number of IPs to assign for each subnet."
+  type        = number
+  default     = 128
 }
