@@ -23,9 +23,9 @@ data "packer_files" "base" {
   file = "${path.module}/base.pkr.hcl"
 }
 
-data "local_file" "packer_manifest" {
-  depends_on = [
-    packer_image.microk8s
-  ]
-  filename = "manifest.json"
-}
+#data "local_file" "packer_manifest" {
+#  depends_on = [
+#    packer_image.microk8s
+#  ]
+#  filename = "manifest.json"
+#}

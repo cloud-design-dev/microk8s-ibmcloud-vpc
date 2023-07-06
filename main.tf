@@ -66,26 +66,10 @@ module "observability" {
   log_analysis_tags              = local.tags
 }
 
-resource "packer_image" "microk8s" {
-  file = data.packer_files.base.file
-  variables = {
-    resource_group_id = "${module.resource_group.resource_group_id}"
-    subnet_id         = "${module.vpc.subnet_ids[0]}"
-    region            = var.region
-    template_name     = "${local.prefix}-base-image"
-    base_image_id     = "${data.ibm_is_image.base.id}"
-  }
-
-  triggers = {
-    packer_version = data.packer_version.version.version
-    files_hash     = data.packer_files.base.files_hash
-  }
-}
-
 resource "ibm_is_instance" "bastion" {
   name           = "${local.prefix}-bastion"
   vpc            = module.vpc.vpc_id[0]
-  image          = jsondecode(data.local_file.packer_manifest.content)["builds"][0]["artifact_id"]
+  image          = data.ibm_is_image.base.id
   profile        = var.instance_profile
   resource_group = module.resource_group.resource_group_id
 
@@ -122,7 +106,7 @@ resource "ibm_is_instance" "control_plane" {
   count          = 3
   name           = "${local.prefix}-control-plane-${count.index}"
   vpc            = module.vpc.vpc_id[0]
-  image          = jsondecode(data.local_file.packer_manifest.content)["builds"][0]["artifact_id"]
+  image          = data.ibm_is_image.base.id
   profile        = var.instance_profile
   resource_group = module.resource_group.resource_group_id
 
@@ -152,7 +136,7 @@ resource "ibm_is_instance" "worker" {
   count          = 3
   name           = "${local.prefix}-worker-${count.index}"
   vpc            = module.vpc.vpc_id[0]
-  image          = jsondecode(data.local_file.packer_manifest.content)["builds"][0]["artifact_id"]
+  image          = data.ibm_is_image.base.id
   profile        = var.instance_profile
   resource_group = module.resource_group.resource_group_id
 

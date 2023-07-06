@@ -7,6 +7,11 @@ packages:
   - unzip
   - jq
   - git
+  - software-properties-common
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - wget
 snap:
     commands:
       00: snap install yq
