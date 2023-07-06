@@ -1,12 +1,10 @@
 locals {
-  prefix = "${random_string.prefix.result}-lab"
-  # ssh_key_ids  = [data.ibm_is_ssh_key.sshkey[0].id]
-
-
+  prefix      = "${random_string.prefix.result}-lab"
   at_endpoint = "https://api.${var.region}.logging.cloud.ibm.com"
   deploy_date = formatdate("YYYYMMDD", timestamp())
 
   zones = length(data.ibm_is_zones.regional.zones)
+
   vpc_zones = {
     for zone in range(local.zones) : zone => {
       zone = "${var.region}-${zone + 1}"

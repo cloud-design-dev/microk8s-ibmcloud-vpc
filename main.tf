@@ -113,6 +113,57 @@ module "bastion" {
 #   tags           = local.tags
 # }
 
+module "control_plane" {
+  source            = "./modules/compute"
+  prefix            = "${local.prefix}-control-plane"
+  resource_group_id = module.resource_group.resource_group_id
+  vpc_id            = module.vpc.vpc_id[0]
+  subnet_id         = module.microk8s_subnet.subnet_id
+  security_group_id = module.security_group.security_group_id[0]
+  zone              = local.vpc_zones[0].zone
+  ssh_key_ids       = [ibm_is_ssh_key.generated_key.id]
+  tags              = local.tags
+}
+
+module "worker_node" {
+  source            = "./modules/compute"
+  prefix            = "${local.prefix}-worker-node"
+  resource_group_id = module.resource_group.resource_group_id
+  vpc_id            = module.vpc.vpc_id[0]
+  subnet_id         = module.microk8s_subnet.subnet_id
+  security_group_id = module.security_group.security_group_id[0]
+  zone              = local.vpc_zones[0].zone
+  ssh_key_ids       = [ibm_is_ssh_key.generated_key.id]
+  tags              = local.tags
+}
+
+module "cos" {
+  depends_on               = [module.vpc]
+  source                   = "git::https://github.com/terraform-ibm-modules/terraform-ibm-cos?ref=v5.3.1"
+  resource_group_id        = module.resource_group.resource_group_id
+  region                   = var.region
+  create_cos_bucket        = true
+  bucket_name              = "${local.prefix}-${local.vpc_zones[0].zone}-control-plane-bucket"
+  cos_instance_name        = "${local.prefix}-cos-instance"
+  cos_tags                 = local.tags
+  encryption_enabled       = false
+  existing_cos_instance_id = null
+}
+
+# Below here there be dragons
+#############################################
+#############################################
+
+
+
+
+
+
+
+
+
+
+
 # resource "ibm_is_instance" "control_plane" {
 #   count          = 3
 #   name           = "${local.prefix}-control-plane-${count.index}"
@@ -173,21 +224,7 @@ module "bastion" {
 #   tags      = concat(local.tags, ["zone:${local.vpc_zones[0].zone}", "microk8s:worker"])
 # }
 
-# module "cos" {
-#   create_cos_instance      = var.existing_cos_instance != "" ? false : true
-#   depends_on               = [module.vpc]
-#   source                   = "git::https://github.com/terraform-ibm-modules/terraform-ibm-cos?ref=v5.3.1"
-#   resource_group_id        = module.resource_group.resource_group_id
-#   region                   = var.region
-#   bucket_name              = "${local.prefix}-${local.vpc_zones[0].zone}-control-plane-bucket"
-#   create_hmac_key          = (var.existing_cos_instance != "" ? false : true)
-#   create_cos_bucket        = true
-#   encryption_enabled       = false
-#   hmac_key_name            = (var.existing_cos_instance != "" ? null : "${local.prefix}-hmac-key")
-#   cos_instance_name        = (var.existing_cos_instance != "" ? null : "${local.prefix}-cos-instance")
-#   cos_tags                 = local.tags
-#   existing_cos_instance_id = (var.existing_cos_instance != "" ? local.cos_instance : null)
-# }
+
 
 # module "microk8s_bucket" {
 #   create_cos_instance      = false
