@@ -6,7 +6,7 @@ Deploying a MicroK8s HA cluster on IBM Cloud VPC using Terraform and Ansible
 
 **To enable:**
 
-- [ ] Ability to use an existing SSH Key
-- [ ] Ability to use an existing COS instance
-- [ ] Count objects on compute resources
-- [ ] Local logic for resource names and IDs
+- [x] Ability to use an existing SSH Key
+- [x] Ability to use an existing COS instance
+- [x] Count objects on compute resources
+- [x] Local logic for resource names and IDs
