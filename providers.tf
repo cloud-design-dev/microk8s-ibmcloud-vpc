@@ -13,6 +13,3 @@ provider "logdna" {
   servicekey = module.observability.log_analysis_resource_key != null ? module.observability.log_analysis_resource_key : ""
   url        = local.at_endpoint
 }
-
-provider "packer" {
-}

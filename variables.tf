@@ -8,12 +8,6 @@ variable "region" {
   type        = string
 }
 
-
-variable "existing_ssh_key" {
-  description = "Name of an existing SSH key in the region. If not set, a new SSH key will be created."
-  type        = string
-}
-
 variable "classic_access" {
   description = "Allow classic access to the VPC."
   type        = bool
@@ -24,41 +18,6 @@ variable "default_address_prefix" {
   description = "The address prefix to use for the VPC. Default is set to auto."
   type        = string
   default     = "auto"
-}
-
-variable "existing_cos_instance" {
-  description = "Name of an existing COS instance to use for resources. If not set, a new COS instance will be created."
-  type        = string
-}
-
-variable "enable_bastion" {
-  description = "Option to enable bastion host for the deployment."
-  type        = bool
-  default     = true
-}
-
-variable "instance_profile" {
-  description = "The profile to use for the bastion host."
-  type        = string
-  default     = "cx2-2x4"
-}
-
-variable "image_name" {
-  description = "The name of the image to use for the bastion host."
-  type        = string
-  default     = "ibm-ubuntu-22-04-2-minimal-amd64-1"
-}
-
-variable "metadata_service_enabled" {
-  description = "Enable metadata service for the bastion host."
-  type        = bool
-  default     = true
-}
-
-variable "allow_ip_spoofing" {
-  description = "Allow IP spoofing for the bastion host."
-  type        = bool
-  default     = false
 }
 
 variable "frontend_rules" {
@@ -192,8 +151,26 @@ variable "frontend_rules" {
 }
 
 
-variable "project_prefix" {}
 variable "number_of_addresses" {
-  type    = number
-  default = 128
+  description = "Number of IPs to assign for each subnet."
+  type        = number
+  default     = 128
+}
+
+variable "project_prefix" {
+  description = "Prefix to use for naming resources."
+  type        = string
+  default     = ""
+}
+
+variable "existing_ssh_key" {
+  description = "Name of an existing SSH key to use for the VPC. If not set, a new SSH key will be created."
+  type        = string
+  default     = ""
+}
+
+variable "existing_cos_instance" {
+  description = "Name of an existing COS instance to use for the VPC. If not set, a new COS instance will be created."
+  type        = string
+  default     = ""
 }

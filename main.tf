@@ -1,3 +1,39 @@
+# Generate a random string if a project prefix was not provided
+resource "random_string" "prefix" {
+  count   = var.project_prefix != "" || var.project_prefix != null ? 0 : 1
+  length  = 4
+  special = false
+  upper   = false
+  numeric = false
+}
+
+# Generate a new SSH key if one was not provided
+resource "tls_private_key" "ssh" {
+  count     = var.existing_ssh_key != "" ? 0 : 1
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+# Add a new SSH key to the region if one was created
+resource "ibm_is_ssh_key" "generated_key" {
+  count          = var.existing_ssh_key != "" ? 0 : 1
+  name           = "${local.prefix}-${var.region}-key"
+  public_key     = tls_private_key.ssh.0.public_key_openssh
+  resource_group = module.resource_group.resource_group_id
+  tags           = local.tags
+}
+
+# Write private key to file if it was generated
+resource "null_resource" "create_private_key" {
+  count = var.existing_ssh_key != "" ? 0 : 1
+  provisioner "local-exec" {
+    command = <<-EOT
+      echo '${tls_private_key.ssh.0.private_key_pem}' > ./'${local.prefix}'.pem
+      chmod 400 ./'${local.prefix}'.pem
+    EOT
+  }
+}
+
 # IF a resource group was not provided, create a new one
 module "resource_group" {
   source                       = "git::https://github.com/terraform-ibm-modules/terraform-ibm-resource-group.git?ref=v1.0.5"
@@ -66,100 +102,47 @@ module "observability" {
   log_analysis_tags              = local.tags
 }
 
-resource "ibm_is_instance" "bastion" {
-  name           = "${local.prefix}-bastion"
-  vpc            = module.vpc.vpc_id[0]
-  image          = data.ibm_is_image.base.id
-  profile        = var.instance_profile
-  resource_group = module.resource_group.resource_group_id
-
-  metadata_service {
-    enabled            = var.metadata_service_enabled
-    protocol           = "https"
-    response_hop_limit = 5
-  }
-
-  boot_volume {
-    name = "${local.prefix}-bastion-volume"
-  }
-
-  primary_network_interface {
-    subnet            = module.vpc.subnet_ids[0]
-    allow_ip_spoofing = var.allow_ip_spoofing
-    security_groups   = [module.security_group.security_group_id[0]]
-  }
-
-  user_data = file("${path.module}/init.yaml")
-  zone      = local.vpc_zones[0].zone
-  keys      = local.ssh_key_ids
-  tags      = concat(local.tags, ["zone:${local.vpc_zones[0].zone}"])
+module "bastion" {
+  source            = "./modules/compute"
+  prefix            = "${local.prefix}-bastion"
+  resource_group_id = module.resource_group.resource_group_id
+  vpc_id            = module.vpc.vpc_id[0]
+  subnet_id         = module.vpc.subnet_ids[0]
+  security_group_id = module.security_group.security_group_id[0]
+  zone              = local.vpc_zones[0].zone
+  ssh_key_ids       = local.ssh_key_ids
+  tags              = local.tags
 }
 
 resource "ibm_is_floating_ip" "bastion" {
   name           = "${local.prefix}-${local.vpc_zones[0].zone}-bastion-ip"
-  target         = ibm_is_instance.bastion.primary_network_interface[0].id
+  target         = module.bastion.primary_network_interface
   resource_group = module.resource_group.resource_group_id
   tags           = local.tags
 }
 
-resource "ibm_is_instance" "control_plane" {
-  count          = 3
-  name           = "${local.prefix}-control-plane-${count.index}"
-  vpc            = module.vpc.vpc_id[0]
-  image          = data.ibm_is_image.base.id
-  profile        = var.instance_profile
-  resource_group = module.resource_group.resource_group_id
-
-  metadata_service {
-    enabled            = var.metadata_service_enabled
-    protocol           = "https"
-    response_hop_limit = 5
-  }
-
-  boot_volume {
-    name = "${local.prefix}-cp-boot-${count.index}"
-  }
-
-  primary_network_interface {
-    subnet            = module.microk8s_subnet.subnet_id
-    allow_ip_spoofing = var.allow_ip_spoofing
-    security_groups   = [module.security_group.security_group_id[0]]
-  }
-
-  user_data = file("${path.module}/init.yaml")
-  zone      = local.vpc_zones[0].zone
-  keys      = local.ssh_key_ids
-  tags      = concat(local.tags, ["zone:${local.vpc_zones[0].zone}", "microk8s:control-plane"])
+module "control_plane" {
+  source            = "./modules/compute"
+  prefix            = "${local.prefix}-control-plane"
+  resource_group_id = module.resource_group.resource_group_id
+  vpc_id            = module.vpc.vpc_id[0]
+  subnet_id         = module.microk8s_subnet.subnet_id
+  security_group_id = module.security_group.security_group_id[0]
+  zone              = local.vpc_zones[0].zone
+  ssh_key_ids       = local.ssh_key_ids
+  tags              = local.tags
 }
 
-resource "ibm_is_instance" "worker" {
-  count          = 3
-  name           = "${local.prefix}-worker-${count.index}"
-  vpc            = module.vpc.vpc_id[0]
-  image          = data.ibm_is_image.base.id
-  profile        = var.instance_profile
-  resource_group = module.resource_group.resource_group_id
-
-  metadata_service {
-    enabled            = var.metadata_service_enabled
-    protocol           = "https"
-    response_hop_limit = 5
-  }
-
-  boot_volume {
-    name = "${local.prefix}-worker-boot-${count.index}"
-  }
-
-  primary_network_interface {
-    subnet            = module.microk8s_subnet.subnet_id
-    allow_ip_spoofing = var.allow_ip_spoofing
-    security_groups   = [module.security_group.security_group_id[0]]
-  }
-
-  user_data = file("${path.module}/init.yaml")
-  zone      = local.vpc_zones[0].zone
-  keys      = local.ssh_key_ids
-  tags      = concat(local.tags, ["zone:${local.vpc_zones[0].zone}", "microk8s:worker"])
+module "worker_node" {
+  source            = "./modules/compute"
+  prefix            = "${local.prefix}-worker-node"
+  resource_group_id = module.resource_group.resource_group_id
+  vpc_id            = module.vpc.vpc_id[0]
+  subnet_id         = module.microk8s_subnet.subnet_id
+  security_group_id = module.security_group.security_group_id[0]
+  zone              = local.vpc_zones[0].zone
+  ssh_key_ids       = local.ssh_key_ids
+  tags              = local.tags
 }
 
 module "cos" {
@@ -168,15 +151,17 @@ module "cos" {
   source                   = "git::https://github.com/terraform-ibm-modules/terraform-ibm-cos?ref=v5.3.1"
   resource_group_id        = module.resource_group.resource_group_id
   region                   = var.region
-  bucket_name              = "${local.prefix}-${local.vpc_zones[0].zone}-control-plane-bucket"
-  create_hmac_key          = (var.existing_cos_instance != "" ? false : true)
   create_cos_bucket        = true
-  encryption_enabled       = false
-  hmac_key_name            = (var.existing_cos_instance != "" ? null : "${local.prefix}-hmac-key")
+  bucket_name              = "${local.prefix}-${local.vpc_zones[0].zone}-1-control-plane-bucket"
   cos_instance_name        = (var.existing_cos_instance != "" ? null : "${local.prefix}-cos-instance")
   cos_tags                 = local.tags
+  encryption_enabled       = false
   existing_cos_instance_id = (var.existing_cos_instance != "" ? local.cos_instance : null)
 }
+
+# Below here there be dragons
+#############################################
+#############################################
 
 module "microk8s_bucket" {
   create_cos_instance      = false
@@ -204,7 +189,7 @@ resource "ibm_iam_authorization_policy" "cos_flowlogs" {
 
 resource "ibm_is_flow_log" "frontend" {
   depends_on     = [ibm_iam_authorization_policy.cos_flowlogs]
-  name           = "${local.prefix}-frontend-subnet-collector"
+  name           = "${local.prefix}-control-plane-subnet-collector"
   target         = module.vpc.subnet_ids[0]
   active         = true
   storage_bucket = module.cos.bucket_name[0]
@@ -218,12 +203,12 @@ resource "ibm_is_flow_log" "microk8s" {
   storage_bucket = module.microk8s_bucket.bucket_name[0]
 }
 
-module "ansible" {
-  source                  = "./ansible"
-  control_plane_instances = ibm_is_instance.control_plane[*]
-  worker_instances        = ibm_is_instance.worker[*]
-  bastion_ip              = ibm_is_floating_ip.bastion.address
-  logging_key             = module.observability.log_analysis_ingestion_key
-  monitoring_key          = module.observability.cloud_monitoring_access_key
-  region                  = var.region
-}
+# module "ansible" {
+#   source                  = "./ansible"
+#   control_plane_instances = module.control_plane.instances
+#   worker_instances        = module.worker_node.instances
+#   bastion_ip              = ibm_is_floating_ip.bastion.address
+#   logging_key             = module.observability.log_analysis_ingestion_key
+#   monitoring_key          = module.observability.cloud_monitoring_access_key
+#   region                  = var.region
+# }
