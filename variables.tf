@@ -156,3 +156,21 @@ variable "number_of_addresses" {
   type        = number
   default     = 128
 }
+
+variable "project_prefix" {
+  description = "Prefix to use for naming resources."
+  type        = string
+  default     = ""
+}
+
+variable "existing_ssh_key" {
+  description = "Name of an existing SSH key to use for the VPC. If not set, a new SSH key will be created."
+  type        = string
+  default     = ""
+}
+
+variable "existing_cos_instance" {
+  description = "Name of an existing COS instance to use for the VPC. If not set, a new COS instance will be created."
+  type        = string
+  default     = ""
+}

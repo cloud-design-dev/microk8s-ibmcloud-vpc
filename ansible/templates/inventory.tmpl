@@ -1,7 +1,7 @@
 [bastion]
 bastion-host ansible_host=${bastion_ip} ansible_user=root
 
-[microk8s_HA]
+[control_plane]
 %{ for instanceIndex, cp_instance in control_plane_instances ~}
 ${cp_instance.name} ansible_host=${cp_instance.primary_network_interface.0.primary_ipv4_address} ansible_user=root
 %{ endfor ~}
@@ -9,7 +9,7 @@ ${cp_instance.name} ansible_host=${cp_instance.primary_network_interface.0.prima
 [microk8s_HA:vars]
 ansible_ssh_extra_args='-o "StrictHostKeyChecking=no" -o ProxyCommand="ssh -o StrictHostKeyChecking=no -W %h:%p root@${bastion_ip}"'
 
-[microk8s_WORKERS]
+[workers]
 %{ for instanceIndex, worker_instance in worker_instances ~}
 ${worker_instance.name} ansible_host=${worker_instance.primary_network_interface.0.primary_ipv4_address} ansible_user=root
 %{ endfor ~}
