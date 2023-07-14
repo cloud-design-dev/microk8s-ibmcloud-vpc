@@ -50,9 +50,9 @@ No outputs.
 | Name | Version |
 |------|---------|
 | <a name="provider_ibm"></a> [ibm](#provider\_ibm) | 1.54.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | 3.2.1 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
-| <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.4 |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
+| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | n/a |
 
 ## Modules
 
@@ -61,8 +61,8 @@ No outputs.
 | <a name="module_ansible"></a> [ansible](#module\_ansible) | ./ansible | n/a |
 | <a name="module_bastion"></a> [bastion](#module\_bastion) | ./modules/compute | n/a |
 | <a name="module_control_plane"></a> [control\_plane](#module\_control\_plane) | ./modules/compute | n/a |
-| <a name="module_cos"></a> [cos](#module\_cos) | git::https://github.com/terraform-ibm-modules/terraform-ibm-cos | v5.3.1 |
-| <a name="module_microk8s_bucket"></a> [microk8s\_bucket](#module\_microk8s\_bucket) | git::https://github.com/terraform-ibm-modules/terraform-ibm-cos | v5.3.1 |
+| <a name="module_cos"></a> [cos](#module\_cos) | git::https://github.com/terraform-ibm-modules/terraform-ibm-cos | v6.10.0 |
+| <a name="module_flowlog_buckets"></a> [flowlog\_buckets](#module\_flowlog\_buckets) | terraform-ibm-modules/cos/ibm//modules/buckets | 6.10.0 |
 | <a name="module_microk8s_subnet"></a> [microk8s\_subnet](#module\_microk8s\_subnet) | terraform-ibm-modules/vpc/ibm//modules/subnet | 1.1.1 |
 | <a name="module_observability"></a> [observability](#module\_observability) | git::https://github.com/terraform-ibm-modules/terraform-ibm-observability-instances | main |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | git::https://github.com/terraform-ibm-modules/terraform-ibm-resource-group.git | v1.0.5 |
@@ -77,7 +77,7 @@ No outputs.
 | [ibm_iam_authorization_policy.cos_flowlogs](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.54.0/docs/resources/iam_authorization_policy) | resource |
 | [ibm_is_floating_ip.bastion](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.54.0/docs/resources/is_floating_ip) | resource |
 | [ibm_is_flow_log.control_plane](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.54.0/docs/resources/is_flow_log) | resource |
-| [ibm_is_flow_log.worker_node](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.54.0/docs/resources/is_flow_log) | resource |
+| [ibm_is_flow_log.worker_nodes](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.54.0/docs/resources/is_flow_log) | resource |
 | [ibm_is_ssh_key.generated_key](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.54.0/docs/resources/is_ssh_key) | resource |
 | [null_resource.create_private_key](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_string.prefix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
@@ -102,5 +102,10 @@ No outputs.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_bastion_ip"></a> [bastion\_ip](#output\_bastion\_ip) | Bastion Public IP |
+| <a name="output_step_01_ping_hosts"></a> [step\_01\_ping\_hosts](#output\_step\_01\_ping\_hosts) | Run the following playbook to ping all hosts and check connectivity |
+| <a name="output_step_02_update_hosts"></a> [step\_02\_update\_hosts](#output\_step\_02\_update\_hosts) | Run the following playbook to update systems and install obersevability tools |
+| <a name="output_step_03_deploy_cluster"></a> [step\_03\_deploy\_cluster](#output\_step\_03\_deploy\_cluster) | Run the following playbook to create the microk8s cluster |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

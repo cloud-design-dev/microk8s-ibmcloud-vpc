@@ -150,33 +150,43 @@ module "worker_node" {
 module "cos" {
   create_cos_instance      = var.existing_cos_instance != "" ? false : true
   depends_on               = [module.vpc]
-  source                   = "git::https://github.com/terraform-ibm-modules/terraform-ibm-cos?ref=v5.3.1"
+  source                   = "git::https://github.com/terraform-ibm-modules/terraform-ibm-cos?ref=v6.10.0"
   resource_group_id        = module.resource_group.resource_group_id
   region                   = var.region
+  bucket_name              = "${local.prefix}-${local.vpc_zones[0].zone}-control-plane-bucket"
   create_cos_bucket        = true
-  bucket_name              = "${local.prefix}-${local.vpc_zones[0].zone}-1-control-plane-bucket"
   cos_instance_name        = (var.existing_cos_instance != "" ? null : "${local.prefix}-cos-instance")
   cos_tags                 = local.tags
-  encryption_enabled       = false
+  kms_encryption_enabled   = false
   existing_cos_instance_id = (var.existing_cos_instance != "" ? local.cos_instance : null)
 }
 
-# Below here there be dragons
-#############################################
-#############################################
-
-module "microk8s_bucket" {
-  create_cos_instance      = false
-  depends_on               = [module.cos]
-  source                   = "git::https://github.com/terraform-ibm-modules/terraform-ibm-cos?ref=v5.3.1"
-  resource_group_id        = module.resource_group.resource_group_id
-  region                   = var.region
-  bucket_name              = "${local.prefix}-${local.vpc_zones[0].zone}-worker-plane-bucket"
-  create_hmac_key          = false
-  create_cos_bucket        = true
-  encryption_enabled       = false
-  cos_tags                 = local.tags
-  existing_cos_instance_id = module.cos.cos_instance_id
+module "flowlog_buckets" {
+  source  = "terraform-ibm-modules/cos/ibm//modules/buckets"
+  version = "6.10.0" # Replace "latest" with a release version to lock into a specific release
+  bucket_configs = [
+    {
+      bucket_name            = "${local.prefix}-${local.vpc_zones[0].zone}-worker-node-1-bucket"
+      region_location        = var.region
+      kms_encryption_enabled = false
+      resource_group_id      = module.resource_group.resource_group_id
+      resource_instance_id   = module.cos.cos_instance_id
+    },
+    {
+      bucket_name            = "${local.prefix}-${local.vpc_zones[0].zone}-worker-node-2-bucket"
+      region_location        = var.region
+      kms_encryption_enabled = false
+      resource_group_id      = module.resource_group.resource_group_id
+      resource_instance_id   = module.cos.cos_instance_id
+    },
+    {
+      bucket_name            = "${local.prefix}-${local.vpc_zones[0].zone}-worker-node-3-bucket"
+      region_location        = var.region
+      kms_encryption_enabled = false
+      resource_group_id      = module.resource_group.resource_group_id
+      resource_instance_id   = module.cos.cos_instance_id
+    }
+  ]
 }
 
 resource "ibm_iam_authorization_policy" "cos_flowlogs" {
@@ -185,7 +195,7 @@ resource "ibm_iam_authorization_policy" "cos_flowlogs" {
   source_service_name         = "is"
   source_resource_type        = "flow-log-collector"
   target_service_name         = "cloud-object-storage"
-  target_resource_instance_id = local.cos_guid
+  target_resource_instance_id = module.cos.cos_instance_guid
   roles                       = ["Writer", "Reader"]
 }
 
@@ -194,15 +204,16 @@ resource "ibm_is_flow_log" "control_plane" {
   name           = "${local.prefix}-control-plane-subnet-collector"
   target         = module.vpc.subnet_ids[0]
   active         = true
-  storage_bucket = module.cos.bucket_name[0]
+  storage_bucket = module.cos.bucket_name
 }
 
-resource "ibm_is_flow_log" "worker_node" {
-  depends_on     = [ibm_iam_authorization_policy.cos_flowlogs]
-  name           = "${local.prefix}-microk8s-subnet-collector"
-  target         = module.microk8s_subnet.subnet_id
+resource "ibm_is_flow_log" "worker_nodes" {
+  count          = 3
+  depends_on     = [ibm_is_flow_log.control_plane]
+  name           = "${local.prefix}-worker-node-${count.index + 1}-collector"
+  target         = module.worker_node[count.index].primary_network_interface
   active         = true
-  storage_bucket = module.microk8s_bucket.bucket_name[0]
+  storage_bucket = module.flowlog_buckets.bucket_configs[count.index].bucket_name
 }
 
 module "ansible" {
