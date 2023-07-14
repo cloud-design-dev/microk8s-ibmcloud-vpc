@@ -150,7 +150,7 @@ module "worker_node" {
 module "cos" {
   create_cos_instance      = var.existing_cos_instance != "" ? false : true
   depends_on               = [module.vpc]
-  source                   = "git::https://github.com/terraform-ibm-modules/terraform-ibm-cos?ref=v5.3.1"
+  source                   = "git::https://github.com/terraform-ibm-modules/terraform-ibm-cos?ref=v6.10.0"
   resource_group_id        = module.resource_group.resource_group_id
   region                   = var.region
   create_cos_bucket        = true
