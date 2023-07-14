@@ -1,6 +1,6 @@
 ---
 - name: 'Install Monitoring Agent on Microk8s control plane nodes'
-  hosts: microk8s_HA
+  hosts: control_plane
   vars_files:
     deployment_vars.yml
   tasks:
@@ -10,7 +10,7 @@
       ansible.builtin.reboot:
         reboot_timeout: 60
 - name: 'Install Monitoring Agent on Microk8s worker nodes'
-  hosts: microk8s_WORKERS
+  hosts: workers
   vars_files:
     deployment_vars.yml
   tasks:

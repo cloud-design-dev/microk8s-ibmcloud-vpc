@@ -122,8 +122,9 @@ resource "ibm_is_floating_ip" "bastion" {
 }
 
 module "control_plane" {
+  count             = 3
   source            = "./modules/compute"
-  prefix            = "${local.prefix}-control-plane"
+  prefix            = "${local.prefix}-control-plane-${count.index + 1}"
   resource_group_id = module.resource_group.resource_group_id
   vpc_id            = module.vpc.vpc_id[0]
   subnet_id         = module.microk8s_subnet.subnet_id
@@ -134,8 +135,9 @@ module "control_plane" {
 }
 
 module "worker_node" {
+  count             = 3
   source            = "./modules/compute"
-  prefix            = "${local.prefix}-worker-node"
+  prefix            = "${local.prefix}-worker-node-${count.index + 1}"
   resource_group_id = module.resource_group.resource_group_id
   vpc_id            = module.vpc.vpc_id[0]
   subnet_id         = module.microk8s_subnet.subnet_id
@@ -187,7 +189,7 @@ resource "ibm_iam_authorization_policy" "cos_flowlogs" {
   roles                       = ["Writer", "Reader"]
 }
 
-resource "ibm_is_flow_log" "frontend" {
+resource "ibm_is_flow_log" "control_plane" {
   depends_on     = [ibm_iam_authorization_policy.cos_flowlogs]
   name           = "${local.prefix}-control-plane-subnet-collector"
   target         = module.vpc.subnet_ids[0]
@@ -195,7 +197,7 @@ resource "ibm_is_flow_log" "frontend" {
   storage_bucket = module.cos.bucket_name[0]
 }
 
-resource "ibm_is_flow_log" "microk8s" {
+resource "ibm_is_flow_log" "worker_node" {
   depends_on     = [ibm_iam_authorization_policy.cos_flowlogs]
   name           = "${local.prefix}-microk8s-subnet-collector"
   target         = module.microk8s_subnet.subnet_id
@@ -203,12 +205,12 @@ resource "ibm_is_flow_log" "microk8s" {
   storage_bucket = module.microk8s_bucket.bucket_name[0]
 }
 
-# module "ansible" {
-#   source                  = "./ansible"
-#   control_plane_instances = module.control_plane.instances
-#   worker_instances        = module.worker_node.instances
-#   bastion_ip              = ibm_is_floating_ip.bastion.address
-#   logging_key             = module.observability.log_analysis_ingestion_key
-#   monitoring_key          = module.observability.cloud_monitoring_access_key
-#   region                  = var.region
-# }
+module "ansible" {
+  source                  = "./ansible"
+  control_plane_instances = module.control_plane[*].instance[0]
+  worker_instances        = module.worker_node[*].instance[0]
+  bastion_ip              = ibm_is_floating_ip.bastion.address
+  logging_key             = module.observability.log_analysis_ingestion_key
+  monitoring_key          = module.observability.cloud_monitoring_access_key
+  region                  = var.region
+}

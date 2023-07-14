@@ -1,7 +1,7 @@
 ---
 - name: 'Install Logging Agent'
   gather_facts: false
-  hosts: microk8s_HA, microk8s_WORKERS
+  hosts: control_plane, workers
   vars_files:
     deployment_vars.yml
   tasks:
@@ -51,7 +51,7 @@
     - name: set logdna-agent logging endpoint 
       shell: logdna-agent -s "LOGDNA_LOGHOST=logs.{{ region }}.logging.cloud.ibm.com"
 - name: 'Set control_plane tags and enable logdna-agent service'
-  hosts: microk8s_HA
+  hosts: control_plane
   tasks:
     - name: Set control plane logdna-agent tags
       shell: logdna-agent -t "microk8s:control_plane"
@@ -61,7 +61,7 @@
         state: started
         enabled: yes
 - name: 'Set worker_node tags and enable logdna-agent service'
-  hosts: microk8s_WORKERS
+  hosts: workers
   tasks:
     - name: Set worker logdna-agent tags
       shell: logdna-agent -t "microk8s:worker_node"
