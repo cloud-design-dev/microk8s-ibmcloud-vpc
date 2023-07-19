@@ -82,24 +82,15 @@ module "microk8s_subnet" {
   public_gateway      = module.vpc.public_gateway_ids[0]
 }
 
-module "observability" {
-  source = "git::https://github.com/terraform-ibm-modules/terraform-ibm-observability-instances?ref=main"
-  providers = {
-    logdna.at = logdna.at
-    logdna.ld = logdna.ld
-  }
-  resource_group_id              = module.resource_group.resource_group_id
-  region                         = var.region
-  cloud_monitoring_provision     = true
-  cloud_monitoring_instance_name = "${local.prefix}-monitoring-instance"
-  enable_platform_metrics        = false
-  cloud_monitoring_plan          = "graduated-tier"
-  cloud_monitoring_tags          = local.tags
-  activity_tracker_provision     = false
-  log_analysis_provision         = true
-  log_analysis_instance_name     = "${local.prefix}-logging-instance"
-  log_analysis_plan              = "7-day"
-  log_analysis_tags              = local.tags
+module "metallb_subnet" {
+  source              = "terraform-ibm-modules/vpc/ibm//modules/subnet"
+  version             = "1.1.1"
+  name                = "${local.prefix}-metallb-subnet"
+  vpc_id              = module.vpc.vpc_id[0]
+  resource_group_id   = module.resource_group.resource_group_id
+  location            = local.vpc_zones[0].zone
+  number_of_addresses = 32
+  public_gateway      = module.vpc.public_gateway_ids[0]
 }
 
 module "bastion" {
@@ -122,9 +113,9 @@ resource "ibm_is_floating_ip" "bastion" {
 }
 
 module "control_plane" {
-  count             = 3
+  count             = 1
   source            = "./modules/compute"
-  prefix            = "${local.prefix}-control-plane-${count.index + 1}"
+  prefix            = "${local.prefix}-control-plane"
   resource_group_id = module.resource_group.resource_group_id
   vpc_id            = module.vpc.vpc_id[0]
   subnet_id         = module.microk8s_subnet.subnet_id
@@ -166,21 +157,7 @@ module "flowlog_buckets" {
   version = "6.10.0" # Replace "latest" with a release version to lock into a specific release
   bucket_configs = [
     {
-      bucket_name            = "${local.prefix}-${local.vpc_zones[0].zone}-worker-node-1-bucket"
-      region_location        = var.region
-      kms_encryption_enabled = false
-      resource_group_id      = module.resource_group.resource_group_id
-      resource_instance_id   = module.cos.cos_instance_id
-    },
-    {
-      bucket_name            = "${local.prefix}-${local.vpc_zones[0].zone}-worker-node-2-bucket"
-      region_location        = var.region
-      kms_encryption_enabled = false
-      resource_group_id      = module.resource_group.resource_group_id
-      resource_instance_id   = module.cos.cos_instance_id
-    },
-    {
-      bucket_name            = "${local.prefix}-${local.vpc_zones[0].zone}-worker-node-3-bucket"
+      bucket_name            = "${local.prefix}-${local.vpc_zones[0].zone}-worker-collector-bucket"
       region_location        = var.region
       kms_encryption_enabled = false
       resource_group_id      = module.resource_group.resource_group_id
@@ -208,20 +185,20 @@ resource "ibm_is_flow_log" "control_plane" {
 }
 
 resource "ibm_is_flow_log" "worker_nodes" {
-  count          = 3
   depends_on     = [ibm_is_flow_log.control_plane]
-  name           = "${local.prefix}-worker-node-${count.index + 1}-collector"
-  target         = module.worker_node[count.index].primary_network_interface
+  name           = "${local.prefix}-worker-subnet-collector"
+  target         = module.microk8s_subnet.subnet_id
   active         = true
-  storage_bucket = module.flowlog_buckets.bucket_configs[count.index].bucket_name
+  storage_bucket = module.flowlog_buckets.bucket_configs[0].bucket_name
 }
 
 module "ansible" {
-  source                  = "./ansible"
-  control_plane_instances = module.control_plane[*].instance[0]
-  worker_instances        = module.worker_node[*].instance[0]
-  bastion_ip              = ibm_is_floating_ip.bastion.address
-  logging_key             = module.observability.log_analysis_ingestion_key
-  monitoring_key          = module.observability.cloud_monitoring_access_key
-  region                  = var.region
+  source            = "./ansible"
+  bastion_public_ip = ibm_is_floating_ip.bastion.address
+  controllers       = module.control_plane[*].instance[0]
+  workers           = module.worker_node[*].instance[0]
+  deployment_prefix = local.prefix
+  logging_key       = var.log_analysis_ingestion_key
+  monitoring_key    = var.cloud_monitoring_access_key
+  region            = var.region
 }

@@ -174,3 +174,13 @@ variable "existing_cos_instance" {
   type        = string
   default     = ""
 }
+
+variable "log_analysis_ingestion_key" {
+  description = "LogDNA ingestion key to use for the Compute instances."
+  type        = string
+}
+
+variable "cloud_monitoring_access_key" {
+  description = "Cloud Monitoring access key to use for the Compute instances."
+  type        = string
+}

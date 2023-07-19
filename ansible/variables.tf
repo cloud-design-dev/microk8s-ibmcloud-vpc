@@ -1,6 +1,7 @@
-variable "control_plane_instances" {}
-variable "worker_instances" {}
-variable "bastion_ip" {}
+variable "bastion_public_ip" {}
+variable "controllers" {}
+variable "workers" {}
+variable "deployment_prefix" {}
 variable "logging_key" {}
 variable "monitoring_key" {}
 variable "region" {}

@@ -1,12 +1,12 @@
 resource "local_file" "ansible-inventory" {
   content = templatefile("${path.module}/templates/inventory.tmpl",
     {
-      control_plane_instances = var.control_plane_instances
-      worker_instances        = var.worker_instances
-      bastion_ip              = var.bastion_ip
+      controllers = var.controllers
+      bastion_ip  = var.bastion_public_ip
+      workers     = var.workers
     }
   )
-  filename = "${path.module}/inventory"
+  filename = "${path.module}/inventory.ini"
 }
 
 resource "local_file" "ansible_inventory_vars" {

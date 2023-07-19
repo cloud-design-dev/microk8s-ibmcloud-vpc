@@ -4,7 +4,6 @@ locals {
   cos_instance = var.existing_cos_instance != "" || var.existing_cos_instance != null ? data.ibm_resource_instance.cos.0.id : null
   cos_guid     = var.existing_cos_instance != "" || var.existing_cos_instance != null ? data.ibm_resource_instance.cos.0.guid : module.cos.cos_instance_guid
 
-  at_endpoint = "https://api.${var.region}.logging.cloud.ibm.com"
   deploy_date = formatdate("YYYYMMDD", timestamp())
 
   zones = length(data.ibm_is_zones.regional.zones)
