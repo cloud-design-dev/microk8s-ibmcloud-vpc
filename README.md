@@ -1,4 +1,4 @@
-# microk8s-ibmcloud-vpc
+# Deploy a MicroK8s cluster on IBM Cloud VPC :rocket:
 
 In this guide we will deploy a testing MicroK8s cluster on IBM Cloud VPC using Terraform and Ansible. Terraform is an IaC tool that will provision the VPC infrastructure and Ansible will configure the MicroK8s cluster.
 

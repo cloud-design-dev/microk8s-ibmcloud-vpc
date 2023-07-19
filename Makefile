@@ -55,11 +55,16 @@ initialize: ## Initialize Terraform configuration, format HCL and run validate
 
 .PHONY: validate
 validate: ## Runs a format and validation check on the configuration files in a directory
+	@echo ""
+	@echo "${WHITE}:: ${RED}Running a format and validation check on current environment${RESET} ${WHITE}::${RESET}"
+	@echo ""
 	terraform fmt -recursive
 	terraform validate
 
 .PHONY: fmt
 fmt: ## Rewrites config to canonical format
+	@echo ""
+	@echo "${WHITE}:: ${RED}Running a terraform format on current environment${RESET} ${WHITE}::${RESET}"
 	terraform fmt -recursive
 
 .PHONY: plan
@@ -72,14 +77,14 @@ plan: ## Run a terraform plan against current workspace and save it to a file
 .PHONY: apply
 apply: ## Run a terraform apply on previously saved plan file
 	@echo ""
-	@echo "${BLACK}:: ${RED}Running an apply on previously saved plan${RESET} ${BLACK}::${RESET}"
+	@echo "${WHITE}:: ${RED}Running an apply on previously saved plan${RESET} ${WHITE}::${RESET}"
 	@echo ""
 	terraform apply "$$(terraform workspace show).tfplan"
 
 .PHONY: reset
 reset: ## Clean up the local state and destroy the infrastructure
 	@echo ""
-	@echo "${BLACK}:: ${RED}Cleaning up terraform envionrment${RESET} ${BLACK}::${RESET}"
+	@echo "${WHITE}:: ${RED}Cleaning up terraform envionrment${RESET} ${WHITE}::${RESET}"
 	@echo ""
 	terraform destroy -auto-approve
 	rm -rf .terraform
@@ -87,6 +92,10 @@ reset: ## Clean up the local state and destroy the infrastructure
 	rm -rf terraform.tfstate
 	rm -rf terraform.tfstate.backup
 	rm -rf *.tfplan
+
+	@echo ""
+	@echo "${WHITE}:: ${RED}Terraform envionrment cleaned and reset${RESET} ${WHITE}::${RESET}"
+	@echo ""
 
 .PHONY: all
 all: initialize plan apply ansible-run ## Initialize, plan and apply the infrastructure and then run Ansible playbooks
