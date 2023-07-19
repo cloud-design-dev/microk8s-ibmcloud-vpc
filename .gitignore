@@ -13,8 +13,6 @@ crash.*.log
 *.tfvars
 *.tfvars.json
 
-# Exclude local lock file for terraform 
-*.lock*
 
 # Ignore local Terraform backend configuration 
 backend.tf

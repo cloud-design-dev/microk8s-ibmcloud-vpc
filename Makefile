@@ -47,7 +47,7 @@ colors: ## show all the colors
 .PHONY: initialize
 initialize: ## Initialize Terraform configuration, format HCL and run validate
 	@echo ""
-	@echo "${BLACK}:: ${RED}Running a fmt, init, and validate on current environment${RESET} ${BLACK}::${RESET}"
+	@echo "${WHITE}:: ${RED}Running a fmt, init, and validate on current environment${RESET} ${WHITE}::${RESET}"
 	@echo ""
 	terraform fmt -recursive
 	terraform init -upgrade=true

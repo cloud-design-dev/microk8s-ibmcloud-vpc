@@ -142,6 +142,16 @@ variable "frontend_rules" {
       }
     },
     {
+      name       = "microk8s-api-inbound"
+      direction  = "inbound"
+      remote     = "0.0.0.0/0"
+      ip_version = "ipv4"
+      tcp = {
+        port_min = 16443
+        port_max = 16443
+      }
+    },
+    {
       name       = "all-outbound"
       direction  = "outbound"
       remote     = "0.0.0.0/0"
