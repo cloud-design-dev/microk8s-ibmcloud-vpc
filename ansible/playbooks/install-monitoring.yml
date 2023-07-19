@@ -15,7 +15,7 @@
     deployment_vars.yml
   tasks:
     - name: Add sysdig agent 
-      shell: curl -sL "https://ibm.biz/install-sysdig-agent" | bash -s -- -a "{{ monitoring_key }}" -c private.ingest.{{ region }}.monitoring.cloud.ibm.com --collector_port 6443 --secure true --tags "microk8s:worker_node"
+      ansible.builtin.shell: curl -sL "https://ibm.biz/install-sysdig-agent" | bash -s -- -a "{{ monitoring_key }}" -c private.ingest.{{ region }}.monitoring.cloud.ibm.com --collector_port 6443 --secure true --tags "microk8s:worker_node"
     - name: Reboot control plane nodes
       ansible.builtin.reboot:
         reboot_timeout: 60

@@ -8,8 +8,6 @@
     microk8s_addons:
       - dns
       - registry
-      - ingress
-      - metallb
      
   tasks:
     - name: Enumerate all controllers within the hosts file
