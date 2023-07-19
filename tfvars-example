@@ -1,0 +1,14 @@
+# IBM Cloud API Key
+ibmcloud_api_key = ""
+
+# IBM Cloud Region for VPC
+region = ""
+
+# Name of an existing Resource Group. If not set, a new one will be created
+existing_resource_group = ""
+
+# Name of an existing SSH key in the Region. If not set, a new one will be created
+existing_ssh_key = ""
+
+# Owner tag that will be applied to all supported services. e.g. `ryantiffany`
+owner = ""
