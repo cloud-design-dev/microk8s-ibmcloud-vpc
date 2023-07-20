@@ -1,3 +1,4 @@
+# Set default shell based on my most common OSes
 UNAME:= $(shell uname)
 ifeq ($(UNAME),Darwin)
 		OS_X  := true
@@ -7,7 +8,7 @@ else
 		SHELL := /bin/bash
 endif
 
-# define standard colors
+# Who wants a terminal without colors?
 ifneq (,$(findstring xterm,${TERM}))
 	BLACK        := $(shell tput -Txterm setaf 0)
 	RED          := $(shell tput -Txterm setaf 1)
@@ -33,7 +34,8 @@ endif
 # set target color
 TARGET_COLOR := $(BLUE)
 
-colors: ## show all the colors
+.PHONY: colors
+colors: ## show all the colors available
 	@echo "${BLACK}BLACK${RESET}"
 	@echo "${RED}RED${RESET}"
 	@echo "${GREEN}GREEN${RESET}"
@@ -47,7 +49,7 @@ colors: ## show all the colors
 .PHONY: initialize
 initialize: ## Initialize Terraform configuration, format HCL and run validate
 	@echo ""
-	@echo "${WHITE}:: ${RED}Running a fmt, init, and validate on current environment${RESET} ${WHITE}::${RESET}"
+	@echo "${WHITE}[::.. ${BLUE}Running a fmt, init, and validate on current environment${RESET} ${WHITE}..::]${RESET}"
 	@echo ""
 	terraform fmt -recursive
 	terraform init -upgrade=true
@@ -56,7 +58,7 @@ initialize: ## Initialize Terraform configuration, format HCL and run validate
 .PHONY: validate
 validate: ## Runs a format and validation check on the configuration files in a directory
 	@echo ""
-	@echo "${WHITE}:: ${RED}Running a format and validation check on current environment${RESET} ${WHITE}::${RESET}"
+	@echo "${WHITE}[::.. ${PURPLE}Running a format and validation check on current environment${RESET} ${WHITE}.::]${RESET}"
 	@echo ""
 	terraform fmt -recursive
 	terraform validate
@@ -64,27 +66,27 @@ validate: ## Runs a format and validation check on the configuration files in a 
 .PHONY: fmt
 fmt: ## Rewrites config to canonical format
 	@echo ""
-	@echo "${WHITE}:: ${RED}Running a terraform format on current environment${RESET} ${WHITE}::${RESET}"
+	@echo "${WHITE}:: ${PURPLE}Running a terraform format on current environment${RESET} ${WHITE}::${RESET}"
 	terraform fmt -recursive
 
 .PHONY: plan
 plan: ## Run a terraform plan against current workspace and save it to a file
 	@echo ""
-	@echo "${BLACK}[:: ${RED}Running a plan on current environment${RESET} ${BLACK}::]${RESET}"
+	@echo "${WHITE}[::.. ${PURPLE}Running a plan on current environment${RESET} ${WHITE}..::]${RESET}"
 	@echo ""
 	terraform plan -out "$$(terraform workspace show).tfplan"
 
 .PHONY: apply
 apply: ## Run a terraform apply on previously saved plan file
 	@echo ""
-	@echo "${WHITE}:: ${RED}Running an apply on previously saved plan${RESET} ${WHITE}::${RESET}"
+	@echo "${WHITE}[::.. ${GREEN}Running an apply on previously saved plan${RESET} ${WHITE}..::]${RESET}"
 	@echo ""
 	terraform apply "$$(terraform workspace show).tfplan"
 
 .PHONY: reset
 reset: ## Clean up the local state and destroy the infrastructure
 	@echo ""
-	@echo "${WHITE}:: ${RED}Cleaning up terraform envionrment${RESET} ${WHITE}::${RESET}"
+	@echo "${WHITE}[::.. ${RED}Cleaning up terraform envionrment${RESET} ${WHITE}..::]${RESET}"
 	@echo ""
 	terraform destroy -auto-approve
 	rm -rf .terraform
@@ -102,20 +104,24 @@ all: initialize plan apply ansible-run ## Initialize, plan and apply the infrast
 
 .PHONY: ansible-run
 ansible-run: ## Run default playbooks to test the infrastructure
-	@echo "${WHITE}:: ${BLUE}Sleeping for 30 seconds to ensure cloud-init updates have completed: ${RESET} ${WHITE}::${RESET}"
-	sleep 30
+	sleep 10
 	@echo ""
-	@echo "${BLACK}:: ${RED}Running ansible playbook to check host connectivity ${RESET} ${BLACK}::${RESET}"
+	@echo "${BLACK}::-- ${YELLOW}Running ansible playbook to check host connectivity ${RESET} ${BLACK}--::${RESET}"
 	@echo ""
 	ansible-playbook -i ansible/inventory.ini ansible/playbooks/ping-all.yml
 	@echo ""
-	@echo "${BLACK}:: ${RED}Running ansible playbook to update all systems ${RESET} ${BLACK}::${RESET}"
+	@echo "${BLACK}::-- ${YELLOW}Running ansible playbook to update all systems ${RESET} ${BLACK}--::${RESET}"
 	@echo ""
+	sleep 30
 	ansible-playbook -i ansible/inventory.ini ansible/playbooks/update-systems.yml
 	@echo ""
-	@echo "${BLACK}:: ${RED}Running ansible playbooks to deploy microk8s ${RESET} ${BLACK}::${RESET}"
+	@echo "${BLACK}::-- ${YELLOW}Running ansible playbooks to deploy microk8s ${RESET} ${BLACK}--::${RESET}"
 	@echo ""
 	ansible-playbook -i ansible/inventory.ini ansible/playbooks/configure-microk8s.yml
+	@echo ""
+	@echo "${BLACK}::-- ${YELLOW}Deployment complete ${RESET} ${BLACK}--::${RESET}"
+	@echo ""
+	@echo "${BLACK}::-- ${YELLOW}To check control plane nodes, run:${RESET} ${LIGHTPURPLE}  ansible -m shell -b -a "microk8s kubectl get nodes" CONTROL_PLANE_NODE -i ansible/inventory.ini ${RESET} ${BLACK}--::${RESET}"
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

@@ -1,6 +1,5 @@
 # Generate a random string if a project prefix was not provided
 resource "random_string" "prefix" {
-  count   = var.project_prefix != "" || var.project_prefix != null ? 0 : 1
   length  = 4
   special = false
   upper   = false
@@ -9,6 +8,7 @@ resource "random_string" "prefix" {
 
 # Generate a new SSH key if one was not provided
 resource "tls_private_key" "ssh" {
+  # Remove for Cloud Shell prep. We need this key regardless to let ansible connect to the bastion
   count     = var.existing_ssh_key != "" ? 0 : 1
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -16,6 +16,7 @@ resource "tls_private_key" "ssh" {
 
 # Add a new SSH key to the region if one was created
 resource "ibm_is_ssh_key" "generated_key" {
+  # Remove for Cloud Shell prep. We need this key regardless to let ansible connect to the bastion
   count          = var.existing_ssh_key != "" ? 0 : 1
   name           = "${local.prefix}-${var.region}-key"
   public_key     = tls_private_key.ssh.0.public_key_openssh
@@ -25,6 +26,7 @@ resource "ibm_is_ssh_key" "generated_key" {
 
 # Write private key to file if it was generated
 resource "null_resource" "create_private_key" {
+  # Remove for Cloud Shell prep. We need this key regardless to let ansible connect to the bastion
   count = var.existing_ssh_key != "" ? 0 : 1
   provisioner "local-exec" {
     command = <<-EOT
@@ -82,17 +84,6 @@ module "microk8s_subnet" {
   public_gateway      = module.vpc.public_gateway_ids[0]
 }
 
-module "metallb_subnet" {
-  source              = "terraform-ibm-modules/vpc/ibm//modules/subnet"
-  version             = "1.1.1"
-  name                = "${local.prefix}-metallb-subnet"
-  vpc_id              = module.vpc.vpc_id[0]
-  resource_group_id   = module.resource_group.resource_group_id
-  location            = local.vpc_zones[0].zone
-  number_of_addresses = 32
-  public_gateway      = module.vpc.public_gateway_ids[0]
-}
-
 module "bastion" {
   source            = "./modules/compute"
   prefix            = "${local.prefix}-bastion"
@@ -113,9 +104,9 @@ resource "ibm_is_floating_ip" "bastion" {
 }
 
 module "control_plane" {
-  count             = 1
+  count             = var.controller_node_count
   source            = "./modules/compute"
-  prefix            = "${local.prefix}-control-plane"
+  prefix            = "${local.prefix}-controller-${count.index + 1}"
   resource_group_id = module.resource_group.resource_group_id
   vpc_id            = module.vpc.vpc_id[0]
   subnet_id         = module.microk8s_subnet.subnet_id
@@ -126,9 +117,9 @@ module "control_plane" {
 }
 
 module "worker_node" {
-  count             = 3
+  count             = var.worker_node_count
   source            = "./modules/compute"
-  prefix            = "${local.prefix}-worker-node-${count.index + 1}"
+  prefix            = "${local.prefix}-worker-${count.index + 1}"
   resource_group_id = module.resource_group.resource_group_id
   vpc_id            = module.vpc.vpc_id[0]
   subnet_id         = module.microk8s_subnet.subnet_id
@@ -152,18 +143,17 @@ module "cos" {
   existing_cos_instance_id = (var.existing_cos_instance != "" ? local.cos_instance : null)
 }
 
-module "flowlog_buckets" {
-  source  = "terraform-ibm-modules/cos/ibm//modules/buckets"
-  version = "6.10.0" # Replace "latest" with a release version to lock into a specific release
-  bucket_configs = [
-    {
-      bucket_name            = "${local.prefix}-${local.vpc_zones[0].zone}-worker-collector-bucket"
-      region_location        = var.region
-      kms_encryption_enabled = false
-      resource_group_id      = module.resource_group.resource_group_id
-      resource_instance_id   = module.cos.cos_instance_id
-    }
-  ]
+module "worker_bucket" {
+  create_cos_instance      = false
+  depends_on               = [module.cos]
+  source                   = "git::https://github.com/terraform-ibm-modules/terraform-ibm-cos?ref=v6.10.0"
+  resource_group_id        = module.resource_group.resource_group_id
+  region                   = var.region
+  bucket_name              = "${local.prefix}-${local.vpc_zones[0].zone}-worker-collector-bucket"
+  create_cos_bucket        = true
+  cos_tags                 = local.tags
+  kms_encryption_enabled   = false
+  existing_cos_instance_id = local.cos_instance
 }
 
 resource "ibm_iam_authorization_policy" "cos_flowlogs" {
@@ -189,7 +179,7 @@ resource "ibm_is_flow_log" "worker_nodes" {
   name           = "${local.prefix}-worker-subnet-collector"
   target         = module.microk8s_subnet.subnet_id
   active         = true
-  storage_bucket = module.flowlog_buckets.bucket_configs[0].bucket_name
+  storage_bucket = module.worker_bucket.bucket_name
 }
 
 module "ansible" {
@@ -197,8 +187,5 @@ module "ansible" {
   bastion_public_ip = ibm_is_floating_ip.bastion.address
   controllers       = module.control_plane[*].instance[0]
   workers           = module.worker_node[*].instance[0]
-  deployment_prefix = local.prefix
-  logging_key       = var.log_analysis_ingestion_key
-  monitoring_key    = var.cloud_monitoring_access_key
   region            = var.region
 }
