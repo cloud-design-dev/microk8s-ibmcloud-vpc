@@ -1,14 +1,16 @@
 # Deploy a microk8s cluster on IBM Cloud VPC :rocket:
 
-In this guide we will deploy a testing [microk8s][microk8s-homepage] cluster on IBM Cloud VPC using [Terraform][terraform-homepage] and [Ansible][ansible-homepage]. Terraform is an IaC tool that will provision the VPC infrastructure and Ansible will configure the MicroK8s cluster.
+In this guide we will deploy a testing [microk8s][microk8s-homepage] cluster in to an IBM Cloud VPC :cloud:. MicroK8s allows you to deploy fully functional, highly available Kubernetes clusters on a wide variety of infrastructure and platforms. With the ability to quickly toggle features on and off, microk8s is a great tool for testing and learning Kubernetes.
+
+In this guide we will be using [Terraform][terraform-homepage] to provision the VPC infrastructure and [Ansible][ansible-homepage] to handle the post provisioning configuration of the the cluster.
 
 ![Microk8s on IBM Cloud VPC](./vpc-microk8s.png)
 
-This guide is written to utilize [IBM Cloud Shell][cloud-shell] as the development environment. Cloud Shell is a free, browser-based shell environment that includes Terraform, Ansible, and the IBM Cloud CLI. If you prefer to use your own environment, see the [Local Pre--requisites](#local-pre-requisites) section below to ensure you have all the required software installed. 
+This guide is written to utilize [IBM Cloud Shell][cloud-shell] as the development environment. Cloud Shell is a free, browser-based shell environment that includes Terraform, Ansible, and the IBM Cloud CLI. If you prefer to use your own environment, see the [Local Prerequisites](#local-prerequisites) section below to ensure you have all the required software installed.
 
-## Pre-requisites
+## Prerequisites
 
-### Cloud Shell
+### Cloud Shell Prerequisites
 
 Since Cloud Shell has all the utilities we need pre-installed, the only piece of information we need to get started is an **IBM Cloud API Key**. See [here](https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key) for instructions on how to create one via the Portal. Alternately you can create one via Cloud Shell with the following command:
 
@@ -16,9 +18,9 @@ Since Cloud Shell has all the utilities we need pre-installed, the only piece of
 ibmcloud iam api-key-create "$(whoami)-microk8s-vpc-apikey" -d "API key for microk8s deployment" --file "$(whoami)-microk8s-vpc-apikey.json"
 ```
 
-> The Cloud Shell environment is ephemeral, meaning when your session is over your files are not preserved. If you want to keep the API key you just generated, click the `Download File` icon in the upper right corner and provide the name of the API key json file 
+**NOTE:** The Cloud Shell environment is ephemeral, meaning when your session is over your files are not preserved. If you want to keep the API key you just generated, click the `Download File` icon in the upper right corner and provide the full path to the API key created above.
 
-### Local Pre-requisites
+### Local Prerequisites
 
 If you would rather run this code on your local machine, you will need to ensure you have the following software installed:
 
