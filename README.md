@@ -12,11 +12,11 @@ This guide is written to utilize [IBM Cloud Shell][cloud-shell] as the developme
 
 ### Local Pre-requisites
 
-If you would rather run this code on your local machine, you will need to also install the following:
+If you would rather run this code on your local machine, you will need to ensure you have the following software installed:
 
-- Recent version of **Terraform** installed. This guide was tested on `terraform 1.5.3`.
-- A recent version of **Ansible** installed. This guide was tested on `ansible 2.15.2`.
-- `(Optional)` - **tfswitch** installed. The `tfswitch` utility allows you to run multiple versions of Terraform on the same system. If you do not have a particular version of terraform installed, tfswitch will download the version you select from an interactive menu.
+- Recent version of [Terraform][terraform-install] installed. This guide was tested on `terraform 1.5.3`.
+- A recent version of [Ansible][ansible-install] installed. This guide was tested on `ansible 2.15.2`.
+- `(Optional)` - [tfswitch][tfswitch-install] installed. The `tfswitch` utility allows you to run multiple versions of Terraform on the same system. If you do not have a particular version of terraform installed, tfswitch will download the version you select from an interactive menu.
 
 ## Configuring Cloud Shell
 
@@ -125,3 +125,6 @@ qywx-controller-1   Ready    contoller   11m    v1.27.2
 [terraform-homepage]: https://www.terraform.io/
 [ansible-homepage]: https://www.ansible.com/
 [microk8s-homepage]: https://microk8s.io/
+[ansible-install]: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-and-upgrading-ansible
+[terraform-install]: https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
+[tfswitch-install]: https://tfswitch.warrensbox.com/
