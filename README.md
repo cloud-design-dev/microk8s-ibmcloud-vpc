@@ -2,18 +2,27 @@
 
 In this guide we will deploy a testing [microk8s][microk8s-homepage] cluster on IBM Cloud VPC using [Terraform][terraform-homepage] and [Ansible][ansible-homepage]. Terraform is an IaC tool that will provision the VPC infrastructure and Ansible will configure the MicroK8s cluster.
 
-This guide is written to utilize [IBM Cloud Shell][cloud-shell] as the development environment. Cloud Shell is a free, browser-based shell environment that includes Terraform, Ansible, and the IBM Cloud CLI. If you prefer to use your own environment, see the [wiki][repo-wiki]. 
-
 ![Microk8s on IBM Cloud VPC](./vpc-microk8s.png)
+
+This guide is written to utilize [IBM Cloud Shell][cloud-shell] as the development environment. Cloud Shell is a free, browser-based shell environment that includes Terraform, Ansible, and the IBM Cloud CLI. If you prefer to use your own environment, see the [Local Pre--requisites](#local-pre-requisites) section below to ensure you have all the required software installed. 
 
 ## Pre-requisites
 
-- IBM Cloud API Key. See [here](https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key) for instructions on how to create one via the Portal.
+### Cloud Shell
+
+Since Cloud Shell has all the utilities we need pre-installed, the only piece of information we need to get started is an **IBM Cloud API Key**. See [here](https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key) for instructions on how to create one via the Portal. Alternately you can create one via Cloud Shell with the following command:
+
+```shell
+ibmcloud iam api-key-create "$(whoami)-microk8s-vpc-apikey" -d "API key for microk8s deployment" --file "$(whoami)-microk8s-vpc-apikey.json"
+```
+
+> The Cloud Shell environment is ephemeral, meaning when your session is over your files are not preserved. If you want to keep the API key you just generated, click the `Download File` icon in the upper right corner and provide the name of the API key json file 
 
 ### Local Pre-requisites
 
 If you would rather run this code on your local machine, you will need to ensure you have the following software installed:
 
+- IBM Cloud API Key. See [here](https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key) for instructions on how to create one via the Portal.
 - Recent version of [Terraform][terraform-install] installed. This guide was tested on `terraform 1.5.3`.
 - A recent version of [Ansible][ansible-install] installed. This guide was tested on `ansible 2.15.2`.
 - `(Optional)` - [tfswitch][tfswitch-install] installed. The `tfswitch` utility allows you to run multiple versions of Terraform on the same system. If you do not have a particular version of terraform installed, tfswitch will download the version you select from an interactive menu.
@@ -26,7 +35,7 @@ The default version of Terraform in Cloud Shell is failry out of date. You can u
 
 It is also recommended that you run an update on the Cloud Shell environment to ensure that all the latest packages are installed.
 
-```bash
+```shell
 ibmcloud plugin update --all 
 ```
 
@@ -120,8 +129,7 @@ qywx-worker-2       Ready    worker      7m3s   v1.27.2
 qywx-controller-1   Ready    contoller   11m    v1.27.2
 ```
 
-[cloud-shell]: https://cloud.ibm.com/shell
-[repo-wiki]: https://github.com/cloud-design-dev/microk8s-ibmcloud-vpc/wiki
+[cloud-shell]: [https://cloud.ibm.com/shel](https://cloud.ibm.com/docs/cloud-shell?topic=cloud-shell-getting-started)l
 [terraform-homepage]: https://www.terraform.io/
 [ansible-homepage]: https://www.ansible.com/
 [microk8s-homepage]: https://microk8s.io/
