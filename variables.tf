@@ -25,6 +25,41 @@ variable "default_address_prefix" {
   default     = "auto"
 }
 
+variable "number_of_addresses" {
+  description = "Number of IPs to assign for each subnet."
+  type        = number
+  default     = 128
+}
+
+variable "owner" {
+  description = "Owner declaration for resource tags. e.g. 'ryantiffany'"
+  type        = string
+}
+
+variable "existing_ssh_key" {
+  description = "Name of an existing SSH key to use for the VPC. If not set, a new SSH key will be created."
+  type        = string
+  default     = ""
+}
+
+variable "existing_cos_instance" {
+  description = "Name of an existing COS instance to use for the VPC. If not set, a new COS instance will be created."
+  type        = string
+  default     = ""
+}
+
+variable "controller_node_count" {
+  description = "Number of controller nodes to create."
+  type        = number
+  default     = 1
+}
+
+variable "worker_node_count" {
+  description = "Number of worker nodes to create."
+  type        = number
+  default     = 3
+}
+
 variable "frontend_rules" {
   description = "A list of security group rules to be added to the Frontend security group"
   type = list(
@@ -157,45 +192,16 @@ variable "frontend_rules" {
       }
     },
     {
+      name       = "services-outbound"
+      direction  = "outbound"
+      remote     = "161.26.0.0/16"
+      ip_version = "ipv4"
+    },
+    {
       name       = "all-outbound"
       direction  = "outbound"
       remote     = "0.0.0.0/0"
       ip_version = "ipv4"
     }
   ]
-}
-
-
-variable "number_of_addresses" {
-  description = "Number of IPs to assign for each subnet."
-  type        = number
-  default     = 128
-}
-
-variable "project_prefix" {
-  description = "Prefix to use for naming resources."
-  type        = string
-  default     = ""
-}
-
-variable "existing_ssh_key" {
-  description = "Name of an existing SSH key to use for the VPC. If not set, a new SSH key will be created."
-  type        = string
-  default     = ""
-}
-
-variable "existing_cos_instance" {
-  description = "Name of an existing COS instance to use for the VPC. If not set, a new COS instance will be created."
-  type        = string
-  default     = ""
-}
-
-variable "log_analysis_ingestion_key" {
-  description = "LogDNA ingestion key to use for the Compute instances."
-  type        = string
-}
-
-variable "cloud_monitoring_access_key" {
-  description = "Cloud Monitoring access key to use for the Compute instances."
-  type        = string
 }

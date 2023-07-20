@@ -6,7 +6,7 @@
       ansible.builtin.yum: name=* state=latest
       register: yum_status
       until: yum_status is success
-      delay: 10
+      delay: 30
       retries: 10
       when: ansible_facts['os_family'] == "RedHat"    
     - name: Update system packages on DEB based systems
@@ -15,6 +15,6 @@
         update_cache=yes
       register: apt_status
       until: apt_status is success
-      delay: 10
+      delay: 30
       retries: 10
       when: ansible_facts['os_family'] == "Debian" 

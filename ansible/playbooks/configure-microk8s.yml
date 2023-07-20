@@ -8,6 +8,7 @@
     microk8s_addons:
       - dns
       - registry
+      - ingress
      
   tasks:
     - name: Enumerate all controllers within the hosts file
@@ -74,6 +75,17 @@
       ansible.builtin.command: "microk8s status --wait-ready"
       changed_when: false
 
+    - name: Set the microk8s join command on the microk8s control nodes
+      ansible.builtin.command: "{{ microk8s_join_command.stdout }}"
+      register: join_command_output
+      failed_when:
+        - "'already known to dqlite' not in join_command_output.stdout"
+        - join_command_output.rc > 0
+      when:
+        - inventory_hostname in groups['controllers']
+        - inventory_hostname != designated_host
+        - inventory_hostname != groups['workers']
+
     - name: Set the microk8s join command on the microk8s worker nodes
       ansible.builtin.command: "{{ microk8s_join_command.stdout }} --worker"
       register: join_command_output
@@ -82,6 +94,8 @@
         - join_command_output.rc > 0
       when:
         - inventory_hostname in groups['workers']
+        - inventory_hostname != groups['controllers']
+        - inventory_hostname != designated_host
 
     - name: Label the kubernetes controller node for easier identification
       ansible.builtin.command: "microk8s kubectl label node {{ inventory_hostname }} kubernetes.io/role=contoller"

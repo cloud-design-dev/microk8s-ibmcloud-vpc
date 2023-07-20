@@ -21,7 +21,3 @@ output "bastion_ip" {
   description = "Bastion Public IP"
   value       = ibm_is_floating_ip.bastion.address
 }
-
-output "metallb_address_pool" {
-  value = module.metallb_subnet.subnet_ipv4_cidr
-}
