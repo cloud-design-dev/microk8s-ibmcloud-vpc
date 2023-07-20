@@ -18,7 +18,7 @@ Since Cloud Shell has all the utilities we need pre-installed, the only piece of
 ibmcloud iam api-key-create "$(whoami)-microk8s-vpc-apikey" -d "API key for microk8s deployment" --file "$(whoami)-microk8s-vpc-apikey.json"
 ```
 
-> **NOTE:** The Cloud Shell environment is ephemeral, meaning when your session is over your files are not preserved. If you want to keep the API key you just generated, click the `Download File` icon in the upper right corner and provide the full path to the API key created above.
+> **NOTE:** The Cloud Shell environment is ephemeral, meaning when your session is over your files are not preserved. If you want to keep the API key you just generated, click the `Download File` icon in the upper right corner and provide the full path/name for the key.
 
 ### Local Prerequisites
 
