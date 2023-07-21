@@ -29,7 +29,6 @@
 | [ibm_is_flow_log.control_plane](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/resources/is_flow_log) | resource |
 | [ibm_is_flow_log.worker_nodes](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/resources/is_flow_log) | resource |
 | [ibm_is_ssh_key.generated_key](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/resources/is_ssh_key) | resource |
-| [null_resource.create_private_key](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_string.prefix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [tls_private_key.ssh](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 | [ibm_is_ssh_key.sshkey](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/data-sources/is_ssh_key) | data source |
@@ -67,7 +66,6 @@
 | Name | Version |
 |------|---------|
 | <a name="provider_ibm"></a> [ibm](#provider\_ibm) | 1.55.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | 3.2.1 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.4 |
 
@@ -95,7 +93,6 @@
 | [ibm_is_flow_log.control_plane](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/resources/is_flow_log) | resource |
 | [ibm_is_flow_log.worker_nodes](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/resources/is_flow_log) | resource |
 | [ibm_is_ssh_key.generated_key](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/resources/is_ssh_key) | resource |
-| [null_resource.create_private_key](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_string.prefix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [tls_private_key.ssh](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 | [ibm_is_ssh_key.sshkey](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/data-sources/is_ssh_key) | data source |
