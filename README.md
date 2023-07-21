@@ -4,7 +4,7 @@ In this guide we will deploy a testing [microk8s][microk8s-homepage] cluster in 
 
 In this guide we will be using [Terraform][terraform-homepage] to provision the VPC infrastructure and [Ansible][ansible-homepage] to handle the post provisioning configuration of the the cluster.
 
-![Microk8s on IBM Cloud VPC](./vpc-microk8s.png)
+![Microk8s on IBM Cloud VPC](https://dsc.cloud/quickshare/vpc-microk8s.png)
 
 This guide is written to utilize [IBM Cloud Shell][cloud-shell] as the development environment. Cloud Shell is a free, browser-based shell environment that includes Terraform, Ansible, and the IBM Cloud CLI. If you prefer to use your own environment, see the [Local Prerequisites](#local-prerequisites) section below to ensure you have all the required software installed.
 
