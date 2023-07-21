@@ -4,14 +4,14 @@ ibmcloud_api_key = ""
 # IBM Cloud Region for VPC
 region = ""
 
-# Name of an existing Resource Group. If not set, a new one will be created
+# Name of an existing Resource Group. If left as an empty string, a new Resource Group will be created
 existing_resource_group = ""
 
-# Name of an existing SSH key in the Region. If not set, a new one will be created
+# Name of an existing SSH key in the Region. If left as an empty string, a new SSH key will be created
 existing_ssh_key = ""
 
 # Owner tag that will be applied to all supported services. e.g. `ryantiffany`
 owner = ""
 
-# Existing COS instance to use for flowlogs. Leave this as is if you want to create a new cos instance. 
+# Existing COS instance to use for flowlogs. If left as an empty string, a new COS instance is created. 
 existing_cos_instance = ""
