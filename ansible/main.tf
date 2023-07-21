@@ -9,6 +9,9 @@ resource "local_file" "ansible-inventory" {
   filename = "${path.module}/inventory.ini"
 }
 
+
+
+
 # resource "local_file" "ansible_inventory_vars" {
 #   content = templatefile("${path.module}/templates/deployment_vars.tmpl",
 #     {

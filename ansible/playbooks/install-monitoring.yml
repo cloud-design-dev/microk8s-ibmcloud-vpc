@@ -1,6 +1,6 @@
 ---
 - name: 'Install Monitoring Agent on Microk8s control plane nodes'
-  hosts: control_plane
+  hosts: controllers
   vars_files:
     deployment_vars.yml
   tasks:

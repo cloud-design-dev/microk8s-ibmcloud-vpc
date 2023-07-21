@@ -16,3 +16,4 @@ ${worker_instance.name} ansible_host=${worker_instance.primary_network_interface
 
 [workers:vars]
 ansible_ssh_extra_args='-o "StrictHostKeyChecking=no" -o ProxyCommand="ssh -o StrictHostKeyChecking=no -W %h:%p root@${bastion_ip}"'
+
