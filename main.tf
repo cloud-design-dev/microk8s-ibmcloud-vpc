@@ -6,34 +6,18 @@ resource "random_string" "prefix" {
   numeric = false
 }
 
-# Generate a new SSH key if one was not provided
+# Generate a new SSH key for cloud shell ansible connection
 resource "tls_private_key" "ssh" {
-  # Remove for Cloud Shell prep. We need this key regardless to let ansible connect to the bastion
-  count     = var.existing_ssh_key != "" ? 0 : 1
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
-# Add a new SSH key to the region if one was created
+# Add a new SSH key to the region for cloud shell ansible connection
 resource "ibm_is_ssh_key" "generated_key" {
-  # Remove for Cloud Shell prep. We need this key regardless to let ansible connect to the bastion
-  count          = var.existing_ssh_key != "" ? 0 : 1
   name           = "${local.prefix}-${var.region}-key"
-  public_key     = tls_private_key.ssh.0.public_key_openssh
+  public_key     = tls_private_key.ssh.public_key_openssh
   resource_group = module.resource_group.resource_group_id
   tags           = local.tags
-}
-
-# Write private key to file if it was generated
-resource "null_resource" "create_private_key" {
-  # Remove for Cloud Shell prep. We need this key regardless to let ansible connect to the bastion
-  count = var.existing_ssh_key != "" ? 0 : 1
-  provisioner "local-exec" {
-    command = <<-EOT
-      echo '${tls_private_key.ssh.0.private_key_pem}' > ./'${local.prefix}'.pem
-      chmod 400 ./'${local.prefix}'.pem
-    EOT
-  }
 }
 
 # IF a resource group was not provided, create a new one
@@ -153,7 +137,7 @@ module "worker_bucket" {
   create_cos_bucket        = true
   cos_tags                 = local.tags
   kms_encryption_enabled   = false
-  existing_cos_instance_id = local.cos_instance
+  existing_cos_instance_id = module.cos.cos_instance_id
 }
 
 resource "ibm_iam_authorization_policy" "cos_flowlogs" {
@@ -188,4 +172,5 @@ module "ansible" {
   controllers       = module.control_plane[*].instance[0]
   workers           = module.worker_node[*].instance[0]
   region            = var.region
+  private_key_pem   = tls_private_key.ssh.private_key_pem
 }

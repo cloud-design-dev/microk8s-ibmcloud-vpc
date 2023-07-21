@@ -12,7 +12,8 @@ This guide is written to utilize [IBM Cloud Shell][cloud-shell] as the developme
 
 ### Cloud Shell Prerequisites
 
-Since Cloud Shell has all the utilities we need pre-installed, the only piece of information we need to get started is an **IBM Cloud API Key**. See [here](https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key) for instructions on how to create one via the Portal. Alternately you can create one via Cloud Shell with the following command:
+- A recent version of [Ansible][ansible-install] installed. Run the command `pip install ansible` to install it. This guide was tested on `ansible 2.15.2`.
+- **IBM Cloud API Key**. See [here](https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key) for instructions on how to create one via the Portal. Alternately you can create one via Cloud Shell with the following command:
 
 ```shell
 ibmcloud iam api-key-create "$(whoami)-microk8s-vpc-apikey" -d "API key for microk8s deployment" --file "$(whoami)-microk8s-vpc-apikey.json"
@@ -33,7 +34,7 @@ If you would rather run this code on your local machine, you will need to ensure
 
 The default version of Terraform in Cloud Shell is failry out of date. You can use the [`tfswitch`](https://tfswitch.warrensbox.com/) command to install a newer version. Invoking `tfswitch` will present a menu of available versions. Select the latest version and it will be installed in your Cloud Shell session.
 
-![Using tfswitch in Cloud Shell](./tfswitch-cloudshell.gif)
+![Using tfswitch in Cloud Shell](https://dsc.cloud/quickshare/tfswitch-cloudshell.gif)
 
 It is also recommended that you run an update on the Cloud Shell environment to ensure that all the latest packages are installed.
 

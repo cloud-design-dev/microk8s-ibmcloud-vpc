@@ -12,3 +12,6 @@ existing_ssh_key = ""
 
 # Owner tag that will be applied to all supported services. e.g. `ryantiffany`
 owner = ""
+
+# Existing COS instance to use for flowlogs. Leave this as is if you want to create a new cos instance. 
+existing_cos_instance = ""

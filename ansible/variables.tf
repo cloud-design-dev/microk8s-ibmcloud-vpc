@@ -2,3 +2,4 @@ variable "bastion_public_ip" {}
 variable "controllers" {}
 variable "workers" {}
 variable "region" {}
+variable "private_key_pem" {}
