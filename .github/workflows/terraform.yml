@@ -11,10 +11,10 @@ permissions:
 env:
   TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
   TF_VAR_region: ${{ vars.VPC_REGION }}
-  TF_VAR_existing_resource_group: "CDE"
-  TF_VAR_existing_ssh_key: ""
-  TF_VAR_owner: "ryantiffany"
-  TF_VAR_existing_cos_instance: "ibmcos-rt"
+  TF_VAR_existing_resource_group: ${{ vars.RESOURCE_GROUP }}
+  TF_VAR_existing_ssh_key: ${{ vars.SSH_KEY }}
+  TF_VAR_owner: ${{ github.actor }}
+  TF_VAR_existing_cos_instance: ${{ vars.COS_INSTANCE }}
 
 jobs:
   terraform:
@@ -48,4 +48,4 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -var="region=${{ vars.VPC_REGION }}" -input=false
+      run: terraform plan -input=false
