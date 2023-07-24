@@ -13,7 +13,7 @@ crash.*.log
 *.tfvars
 *.tfvars.json
 
-
+ansible/generated_key_rsa
 # Ignore local Terraform backend configuration 
 
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
