@@ -44,25 +44,25 @@ variable "existing_ssh_key" {
 }
 
 variable "existing_cos_instance" {
-  description = "Name of an existing COS instance to use for the VPC. If not set, a new COS instance will be created."
+  description = "Name of an existing Object Storage instance to use for the VPC Flowlog collectors. If not set, a new Object Storage instance will be created."
   type        = string
   default     = ""
 }
 
 variable "controller_node_count" {
-  description = "Number of controller nodes to create."
+  description = "Number of microk8s controller nodes to create."
   type        = number
   default     = 1
 }
 
 variable "worker_node_count" {
-  description = "Number of worker nodes to create."
+  description = "Number of microk8s worker nodes to create."
   type        = number
   default     = 3
 }
 
 variable "frontend_rules" {
-  description = "A list of security group rules to be added to the Frontend security group"
+  description = "A list of security group rules to be added to the microk8s security group"
   type = list(
     object({
       name      = string
