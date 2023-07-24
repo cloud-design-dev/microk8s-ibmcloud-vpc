@@ -1,4 +1,4 @@
-# Generate a random string if a project prefix was not provided
+# Generate a random string for the prefix
 resource "random_string" "prefix" {
   length  = 4
   special = false
