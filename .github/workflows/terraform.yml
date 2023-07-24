@@ -10,7 +10,7 @@ permissions:
 
 env:
   TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
-  TF_VAR_region: "ca-tor"
+  TF_VAR_region: ${{ vars.VPC_REGION }}
   TF_VAR_existing_resource_group: "CDE"
   TF_VAR_existing_ssh_key: ""
   TF_VAR_owner: "ryantiffany"
@@ -48,10 +48,4 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false
-
-      # On push to "development", build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/"development"' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false
+      run: terraform plan -var="region=${{ vars.VPC_REGION }}" -input=false
