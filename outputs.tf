@@ -1,7 +1,7 @@
 output "step_01_ping_hosts" {
   depends_on  = [module.ansible]
   description = "Run the following playbook to ping all hosts and check connectivity"
-  value       = "ansible-playbook -i ansible/inventory.ini  ansible/playbooks/ping-all.yml"
+  value       = "ansible-playbook -i ansible/inventory.ini ansible/playbooks/ping-all.yml"
 }
 
 output "step_02_update_hosts" {

@@ -10,43 +10,21 @@ This guide is written to utilize [IBM Cloud Shell][cloud-shell] as the developme
 
 ## Prerequisites
 
-### Cloud Shell Prerequisites
+To deploy our microk8s cluster, you will need to ensure you have the following prerequisites:
 
-- A recent version of [Ansible][ansible-install] installed. Run the command `pip install ansible` to install it. This guide was tested on `ansible 2.15.2`.
-- **IBM Cloud API Key**. See [here](https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key) for instructions on how to create one via the Portal. Alternately you can create one via Cloud Shell with the following command:
+- IBM Cloud API Key. See [here](https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key) for instructions on how to create one via the Portal. Alternately you can use the following CLI command to create one:
 
-```shell
-ibmcloud iam api-key-create "$(whoami)-microk8s-vpc-apikey" -d "API key for microk8s deployment" --file "$(whoami)-microk8s-vpc-apikey.json"
-```
+    ```shell
+    ibmcloud iam api-key-create "$(whoami)-microk8s-vpc-apikey" -d "API key for microk8s deployment" --file "$(whoami)-microk8s-vpc-apikey.json"
+    ```
 
-> **NOTE:** The Cloud Shell environment is ephemeral, meaning when your session is over your files are not preserved. If you want to keep the API key you just generated, click the `Download File` icon in the upper right corner and provide the full path/name for the key.
-
-### Local Prerequisites
-
-If you would rather run this code on your local machine, you will need to ensure you have the following software installed:
-
-- IBM Cloud API Key. See [here](https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key) for instructions on how to create one via the Portal.
 - Recent version of [Terraform][terraform-install] installed. This guide was tested on `terraform 1.5.3`.
 - A recent version of [Ansible][ansible-install] installed. This guide was tested on `ansible 2.15.2`.
 - `(Optional)` - [tfswitch][tfswitch-install] installed. The `tfswitch` utility allows you to run multiple versions of Terraform on the same system. If you do not have a particular version of terraform installed, tfswitch will download the version you select from an interactive menu.
 
-## Configuring Cloud Shell
-
-The default version of Terraform in Cloud Shell is failry out of date. You can use the [`tfswitch`](https://tfswitch.warrensbox.com/) command to install a newer version. Invoking `tfswitch` will present a menu of available versions. Select the latest version and it will be installed in your Cloud Shell session.
-
-![Using tfswitch in Cloud Shell](https://dsc.cloud/quickshare/tfswitch-cloudshell.gif)
-
-It is also recommended that you run an update on the Cloud Shell environment to ensure that all the latest packages are installed.
-
-```shell
-ibmcloud plugin update --all 
-```
-
-***
-
 ## Deploying the cluster
 
-With Cloud Shell up to date and the latest Terraform installed, you can start deploying the cluster.
+With the prerequisites installed and up to date, you can start deploying the cluster.
 
 1. Clone this repo and `cd` into the `microk8s-ibmcloud-vpc` directory.
 
