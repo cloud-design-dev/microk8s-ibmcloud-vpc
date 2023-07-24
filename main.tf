@@ -23,8 +23,8 @@ resource "ibm_is_ssh_key" "generated_key" {
 # IF a resource group was not provided, create a new one
 module "resource_group" {
   source                       = "git::https://github.com/terraform-ibm-modules/terraform-ibm-resource-group.git?ref=v1.0.6"
-  resource_group_name          = var.existing_resource_group != "" ? "${local.prefix}-resource-group" : null
-  existing_resource_group_name = var.existing_resource_group
+  resource_group_name          = (var.existing_resource_group != "" ? "${local.prefix}-resource-group" : null)
+  existing_resource_group_name = (var.existing_resource_group != "" ? var.existing_resource_group : null)
 }
 
 module "vpc" {
