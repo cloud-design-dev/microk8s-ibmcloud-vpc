@@ -1,9 +1,10 @@
-name: 'Terraform'
+name: 'Terraform Validate and Plan'
 
 on:
   push:
     branches: [ "development" ]
-  # pull_request:
+  pull_request:
+    branches: [ "main" ]
 
 permissions:
   contents: read
