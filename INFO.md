@@ -33,6 +33,7 @@
 | [tls_private_key.ssh](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 | [ibm_is_ssh_key.sshkey](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/data-sources/is_ssh_key) | data source |
 | [ibm_is_zones.regional](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/data-sources/is_zones) | data source |
+| [ibm_resource_group.resource_group](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/data-sources/resource_group) | data source |
 | [ibm_resource_instance.cos](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/data-sources/resource_instance) | data source |
 
 ## Inputs
@@ -97,6 +98,7 @@
 | [tls_private_key.ssh](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 | [ibm_is_ssh_key.sshkey](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/data-sources/is_ssh_key) | data source |
 | [ibm_is_zones.regional](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/data-sources/is_zones) | data source |
+| [ibm_resource_group.resource_group](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/data-sources/resource_group) | data source |
 | [ibm_resource_instance.cos](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.55.0/docs/data-sources/resource_instance) | data source |
 
 ## Inputs

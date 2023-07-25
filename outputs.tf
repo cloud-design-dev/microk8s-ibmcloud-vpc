@@ -7,7 +7,7 @@ output "step_01_ping_hosts" {
 output "step_02_update_hosts" {
   depends_on  = [module.ansible]
   description = "Run the following playbook to update systems and install obersevability tools"
-  value       = "ansible-playbook -i ansible/inventory.ini ansible/playbooks/main.yml"
+  value       = "ansible-playbook -i ansible/inventory.ini ansible/playbooks/update-systems.yml"
 }
 
 output "step_03_deploy_cluster" {

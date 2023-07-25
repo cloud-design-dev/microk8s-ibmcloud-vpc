@@ -26,3 +26,4 @@ ansible/inventory.ini
 terraform.rc
 
 *.pem
+**/tftest-ansible/*

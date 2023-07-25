@@ -1,9 +1,9 @@
 locals {
-  prefix = random_string.prefix.result
-  # Add in both keys for true declarative. We need to add both so ansible can connect through the bastion
-  ssh_key_ids  = var.existing_ssh_key != "" ? [data.ibm_is_ssh_key.sshkey[0].id, ibm_is_ssh_key.generated_key.id] : [ibm_is_ssh_key.generated_key.id]
-  cos_instance = var.existing_cos_instance != "" ? data.ibm_resource_instance.cos.0.id : null
-  cos_guid     = var.existing_cos_instance != "" ? data.ibm_resource_instance.cos.0.guid : module.cos.cos_instance_guid
+  prefix            = random_string.prefix.result
+  resource_group_id = var.existing_resource_group != "" ? data.ibm_resource_group.resource_group[0].id : module.resource_group[0].resource_group_id
+  ssh_key_ids       = var.existing_ssh_key != "" ? [data.ibm_is_ssh_key.sshkey[0].id, ibm_is_ssh_key.generated_key.id] : [ibm_is_ssh_key.generated_key.id]
+  cos_instance      = var.existing_cos_instance != "" ? data.ibm_resource_instance.cos.0.id : null
+  cos_guid          = var.existing_cos_instance != "" ? data.ibm_resource_instance.cos.0.guid : module.cos.cos_instance_guid
 
   zones = length(data.ibm_is_zones.regional.zones)
   vpc_zones = {

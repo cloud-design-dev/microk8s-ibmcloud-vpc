@@ -12,3 +12,8 @@ data "ibm_resource_instance" "cos" {
   count = var.existing_cos_instance != "" ? 1 : 0
   name  = var.existing_cos_instance
 }
+
+data "ibm_resource_group" "resource_group" {
+  count = var.existing_resource_group != "" ? 1 : 0
+  name  = var.existing_resource_group
+}
