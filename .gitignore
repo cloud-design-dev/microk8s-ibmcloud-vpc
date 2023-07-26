@@ -16,6 +16,8 @@ crash.*.log
 ansible/generated_key_rsa
 # Ignore local Terraform backend configuration 
 
+.terraform.lock.hcl
+
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 *.tfplan*
 ansible/playbooks/deployment_vars.yml
