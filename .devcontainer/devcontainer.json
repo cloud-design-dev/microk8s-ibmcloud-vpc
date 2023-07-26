@@ -7,7 +7,14 @@
       }
     },
     "postStartCommand": "post-start",
-    "settings": {},
-    "extensions": ["hashicorp.terraform"],
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "hashicorp.terraform",
+          "ms-vscode.makefile-tools",
+          "redhat.ansible"
+        ]
+      }
+    },
     "remoteUser": "vscode"
   }

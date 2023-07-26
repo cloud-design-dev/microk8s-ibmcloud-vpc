@@ -176,3 +176,10 @@ module "ansible" {
   region            = var.region
   private_key_pem   = tls_private_key.ssh.private_key_pem
 }
+
+resource "null_resource" "ansible" {
+  depends_on = [module.ansible]
+  provisioner "local-exec" {
+    command = "ssh-add ansible/generated_key_rsa"
+  }
+}
