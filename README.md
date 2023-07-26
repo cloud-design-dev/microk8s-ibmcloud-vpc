@@ -66,7 +66,7 @@ Outputs:
 
 bastion_ip = "<your bastion ip>"
 step_01_ping_hosts = "ansible-playbook -i ansible/inventory.ini  ansible/playbooks/ping-all.yml"
-step_02_update_hosts = "ansible-playbook -i ansible/inventory.ini ansible/playbooks/main.yml"
+step_02_update_hosts = "ansible-playbook -i ansible/inventory.ini ansible/playbooks/update-systems.yml"
 step_03_deploy_cluster = "ansible-playbook -i ansible/inventory.ini ansible/playbooks/configure-microk8s.yml"
 ```
 

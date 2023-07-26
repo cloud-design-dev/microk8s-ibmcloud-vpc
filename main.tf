@@ -165,6 +165,7 @@ resource "ibm_is_flow_log" "worker_nodes" {
   target         = module.microk8s_subnet.subnet_id
   active         = true
   storage_bucket = module.worker_bucket.bucket_name
+  resource_group = local.resource_group_id
 }
 
 module "ansible" {
