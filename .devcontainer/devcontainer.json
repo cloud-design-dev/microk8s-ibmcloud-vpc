@@ -1,0 +1,13 @@
+{
+    "name": "IBM Cloud Terraform Helper",
+    "build": {
+      "dockerfile": "Dockerfile",
+      "args": {
+        "VARIANT": "ubuntu-22.04"
+      }
+    },
+    "postStartCommand": "post-start",
+    "settings": {},
+    "extensions": ["hashicorp.terraform"],
+    "remoteUser": "vscode"
+  }
