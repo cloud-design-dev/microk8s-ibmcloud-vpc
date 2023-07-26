@@ -20,6 +20,8 @@ ansible/generated_key_rsa
 *.tfplan*
 ansible/playbooks/deployment_vars.yml
 ansible/inventory.ini
+**/.devcontainer/*
+
 
 # Ignore CLI configuration files
 .terraformrc
