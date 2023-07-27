@@ -10,10 +10,10 @@
     "customizations": {
       "vscode": {
         "extensions": [
-          "hashicorp.terraform",
-          "ms-vscode.makefile-tools",
-          "redhat.ansible"
-        ]
+			"hashicorp.terraform",
+			"ms-vscode.makefile-tools",
+			"redhat.ansible"
+		]
       }
     },
     "remoteUser": "vscode"

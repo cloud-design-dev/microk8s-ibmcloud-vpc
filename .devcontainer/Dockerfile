@@ -1,7 +1,7 @@
 ARG VARIANT="jammy"
 FROM mcr.microsoft.com/vscode/devcontainers/base:0-${VARIANT}
 
-ENV pip_packages "ansible softlayer"
+ENV pip_packages "ansible softlayer ansible-lint"
 
 # Update system and install dependencies
 RUN apt-get update \
@@ -12,6 +12,7 @@ RUN apt-get update \
         python3-wheel \
         unzip \
         make \
+        exa \
     && rm -rf /var/lib/apt/lists/* \
     && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
     && apt-get clean

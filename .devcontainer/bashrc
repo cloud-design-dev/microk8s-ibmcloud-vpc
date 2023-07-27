@@ -1,2 +1,8 @@
 export PATH="$HOME/bin:$PATH"
+alias ls='exa -la -t modified --octal-permissions --no-permissions'
 eval "$(starship init bash)"
+
+ssh_tunnel () {
+        printf "%b" "\e[1;34mSSH tunneling through ${1} to ${2}::\e[0m\n"
+        ssh -o ProxyCommand="ssh -W %h:%p root@${1}" "root@${2}"
+}

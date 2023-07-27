@@ -110,6 +110,16 @@ qywx-worker-2       Ready    worker      7m3s   v1.27.2
 qywx-controller-1   Ready    contoller   11m    v1.27.2
 ```
 
+## Running the devcontainer
+
+This repository comes with a `devcontainer` configuration file. If you would like to use this containerized development environment, ensure you have the following installed:
+
+- [Docker](https://www.docker.com/products/docker-desktop/)
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [VSCode Remote Development Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) 
+
+To reopen this repository in the development container, open the [command pallete](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette) on VS Code and select `Rebuild and Reopen in Container`
+
 [cloud-shell]: [https://cloud.ibm.com/shel](https://cloud.ibm.com/docs/cloud-shell?topic=cloud-shell-getting-started)l
 [terraform-homepage]: https://www.terraform.io/
 [ansible-homepage]: https://www.ansible.com/

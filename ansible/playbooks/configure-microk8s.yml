@@ -9,38 +9,42 @@
       - dns
       - registry
       - ingress
-     
+    load_balancer_pool: "10.241.0.20-10.241.0.30"
   tasks:
-    - name: Enumerate all controllers within the hosts file
-      blockinfile:
+    - name: Find the designated host
+      ansible.builtin.set_fact:
+        designated_host: "{{ (groups['controllers'] | sort)[0] }}"
+
+    - name: Enumerate all control nodes within the hosts file
+      ansible.builtin.blockinfile:
         dest: /etc/hosts
         marker: "# {mark} ANSIBLE MANAGED: microk8s hosts"
         content: |
           {% for host in groups['controllers'] %}
           {{ hostvars[host].ansible_default_ipv4.address }} {{ hostvars[host].ansible_hostname }}
           {% endfor %}
+      when:
+        - inventory_hostname in groups['controllers']
 
-    - name: Enumerate all workers within the hosts file
-      blockinfile:
+    - name: Enumerate all worker nodes within the hosts file
+      ansible.builtin.blockinfile:
         dest: /etc/hosts
         marker: "# {mark} ANSIBLE MANAGED: microk8s hosts"
         content: |
           {% for host in groups['workers'] %}
           {{ hostvars[host].ansible_default_ipv4.address }} {{ hostvars[host].ansible_hostname }}
           {% endfor %}
-
-    - name: Find the designated host
-      set_fact:
-        designated_host: "{{ (groups['controllers']|sort)[0] }}"
+      when:
+        - inventory_hostname in groups['controllers']
 
     - name: Wait for microk8s to be ready
-      command: microk8s status --wait-ready
+      ansible.builtin.command: microk8s status --wait-ready
       changed_when: false
       delegate_to: "{{ designated_host }}"
       register: mk8sstatusout
       failed_when:
-          - "'This MicroK8s deployment is acting as a node in a cluster.' not in mk8sstatusout.stdout_lines"
-          - mk8sstatusout.rc > 0
+        - "'This MicroK8s deployment is acting as a node in a cluster.' not in mk8sstatusout.stdout_lines"
+        - mk8sstatusout.rc > 0
 
     - name: Create kubectl alias
       ansible.builtin.command: "snap alias microk8s.kubectl kubectl"
@@ -77,42 +81,48 @@
 
     - name: Set the microk8s join command on the microk8s control nodes
       ansible.builtin.command: "{{ microk8s_join_command.stdout }}"
-      register: join_command_output
+      register: control_join_command_output
       failed_when:
-        - "'already known to dqlite' not in join_command_output.stdout"
-        - join_command_output.rc > 0
+        - "'already known to dqlite' not in control_join_command_output.stdout"
+        - control_join_command_output.rc > 0
       when:
         - inventory_hostname in groups['controllers']
         - inventory_hostname != designated_host
-        - inventory_hostname != groups['workers']
+      changed_when: control_join_command_output.rc != 0
 
     - name: Set the microk8s join command on the microk8s worker nodes
       ansible.builtin.command: "{{ microk8s_join_command.stdout }} --worker"
-      register: join_command_output
+      register: worker_join_command_output
       failed_when:
-        - "'already known to dqlite' not in join_command_output.stdout"
-        - join_command_output.rc > 0
+        - "'already known to dqlite' not in worker_join_command_output.stdout"
+        - worker_join_command_output.rc > 0
       when:
         - inventory_hostname in groups['workers']
-        - inventory_hostname != groups['controllers']
-        - inventory_hostname != designated_host
+      changed_when: worker_join_command_output.rc != 0
 
     - name: Label the kubernetes controller node for easier identification
-      ansible.builtin.command: "microk8s kubectl label node {{ inventory_hostname }} kubernetes.io/role=contoller"
+      ansible.builtin.command: "microk8s kubectl label node {{ inventory_hostname }} role=contoller"
       changed_when: false
       delegate_to: "{{ designated_host }}"
       when:
         - inventory_hostname in groups['controllers']
 
     - name: Label the kubernetes worker nodes for easier identification
-      ansible.builtin.command: "microk8s kubectl label node {{ inventory_hostname }} kubernetes.io/role=worker"
+      ansible.builtin.command: "microk8s kubectl label node {{ inventory_hostname }} role=worker"
       delegate_to: "{{ designated_host }}"
       changed_when: false
       when:
-        - inventory_hostname != groups['controllers']
         - inventory_hostname in groups['workers']
 
     - name: Enable microk8s add-ons
-      ansible.builtin.shell: microk8s enable {{ item }}
+      ansible.builtin.command: microk8s enable {{ item }}
       loop: "{{ microk8s_addons }}"
       delegate_to: "{{ designated_host }}"
+      register: add_ons_enabled
+      changed_when: add_ons_enabled.rc != 0
+
+    # - name: Attempt metallb configuration
+    #   ansible.builtin.command: "microk8s enable metallb:{{ load_balancer_pool }}"
+    #   delegate_to: "{{ designated_host }}"
+    #   register: metallb_enabled
+    #   changed_when: metallb_enabled.rc != 0

@@ -123,6 +123,13 @@ ansible-run: ## Run default playbooks to test the infrastructure
 	@echo ""
 	@echo "${BLACK}::-- ${YELLOW}To check control plane nodes, run:${RESET} ${LIGHTPURPLE}  ansible -m shell -b -a ""microk8s kubectl get nodes"" CONTROL_PLANE_NODE -i ansible/inventory.ini ${RESET} ${BLACK}--::${RESET}"
 
+.PHONY: reset-ssh
+reset-ssh: ## Remove ssh-keys added to ssh-agent
+	@echo ""
+	@echo "${BLACK}::-- ${YELLOW}Removing ssh-key identities added as part of deployment ${RESET} ${BLACK}--::${RESET}"
+	@echo ""
+	ssh-add -D
+
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
