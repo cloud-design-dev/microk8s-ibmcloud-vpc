@@ -121,6 +121,7 @@
       register: add_ons_enabled
       changed_when: add_ons_enabled.rc != 0
 
+
     # - name: Attempt metallb configuration
     #   ansible.builtin.command: "microk8s enable metallb:{{ load_balancer_pool }}"
     #   delegate_to: "{{ designated_host }}"

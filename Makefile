@@ -46,8 +46,8 @@ colors: ## show all the colors available
 	@echo "${WHITE}WHITE${RESET}"
 
 
-.PHONY: initialize
-initialize: ## Initialize Terraform configuration, format HCL and run validate
+.PHONY: init
+init: ## Initialize Terraform configuration, format HCL and run validate
 	@echo ""
 	@echo "${WHITE}[::.. ${BLUE}Running a fmt, init, and validate on current environment${RESET} ${WHITE}..::]${RESET}"
 	@echo ""
