@@ -9,7 +9,10 @@
       - dns
       - registry
       - ingress
-    load_balancer_pool: "10.241.0.20-10.241.0.30"
+      - host-access
+      - hostpath-storage
+      - ha-cluster
+    # load_balancer_pool: "10.241.0.20-10.241.0.30"
   tasks:
     - name: Find the designated host
       ansible.builtin.set_fact:
@@ -18,19 +21,11 @@
     - name: Enumerate all control nodes within the hosts file
       ansible.builtin.blockinfile:
         dest: /etc/hosts
-        marker: "# {mark} ANSIBLE MANAGED: microk8s hosts"
+        marker: "# {mark} ANSIBLE MANAGED: microk8s controller hosts"
         content: |
           {% for host in groups['controllers'] %}
           {{ hostvars[host].ansible_default_ipv4.address }} {{ hostvars[host].ansible_hostname }}
           {% endfor %}
-      when:
-        - inventory_hostname in groups['controllers']
-
-    - name: Enumerate all worker nodes within the hosts file
-      ansible.builtin.blockinfile:
-        dest: /etc/hosts
-        marker: "# {mark} ANSIBLE MANAGED: microk8s hosts"
-        content: |
           {% for host in groups['workers'] %}
           {{ hostvars[host].ansible_default_ipv4.address }} {{ hostvars[host].ansible_hostname }}
           {% endfor %}
@@ -58,7 +53,7 @@
       changed_when: false
 
     - name: Get the microk8s join command from the microk8s master
-      ansible.builtin.shell: "microk8s add-node | grep -E -m1 'microk8s join {{ microk8s_ip_regex }}'"
+      ansible.builtin.shell:  "microk8s add-node | grep -E -m1 'microk8s join {{ microk8s_ip_regex }}'"
       delegate_to: "{{ designated_host }}"
       delegate_facts: true
       changed_when: false
