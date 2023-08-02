@@ -29,7 +29,7 @@ module "resource_group" {
 
 module "vpc" {
   source                      = "terraform-ibm-modules/vpc/ibm//modules/vpc"
-  version                     = "1.1.1"
+  version                     = "1.1.2"
   create_vpc                  = true
   vpc_name                    = "${local.prefix}-vpc"
   resource_group_id           = local.resource_group_id
@@ -49,7 +49,7 @@ module "vpc" {
 
 module "security_group" {
   source                = "terraform-ibm-modules/vpc/ibm//modules/security-group"
-  version               = "1.1.1"
+  version               = "1.1.2"
   create_security_group = true
   name                  = "${local.prefix}-frontend-sg"
   vpc_id                = module.vpc.vpc_id[0]
@@ -59,7 +59,7 @@ module "security_group" {
 
 module "microk8s_subnet" {
   source              = "terraform-ibm-modules/vpc/ibm//modules/subnet"
-  version             = "1.1.1"
+  version             = "1.1.2"
   name                = "${local.prefix}-microk8s-subnet"
   vpc_id              = module.vpc.vpc_id[0]
   resource_group_id   = local.resource_group_id
