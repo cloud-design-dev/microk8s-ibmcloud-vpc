@@ -31,7 +31,6 @@ else
 	RESET        := ""
 endif
 
-# set target color
 TARGET_COLOR := $(BLUE)
 
 .PHONY: colors
