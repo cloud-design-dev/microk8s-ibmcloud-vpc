@@ -116,7 +116,7 @@ module "worker_node" {
 module "cos" {
   create_cos_instance      = var.existing_cos_instance != "" ? false : true
   depends_on               = [module.vpc]
-  source                   = "git::https://github.com/terraform-ibm-modules/terraform-ibm-cos?ref=v8.1.9"
+  source                   = "git::https://github.com/terraform-ibm-modules/terraform-ibm-cos?ref=v8.3.1"
   resource_group_id        = local.resource_group_id
   region                   = var.region
   bucket_name              = "${local.prefix}-${local.vpc_zones[0].zone}-control-plane-bucket"
