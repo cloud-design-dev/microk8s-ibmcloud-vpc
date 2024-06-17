@@ -130,7 +130,7 @@ module "cos" {
 module "worker_bucket" {
   create_cos_instance      = false
   depends_on               = [module.cos]
-  source                   = "git::https://github.com/terraform-ibm-modules/terraform-ibm-cos?ref=v8.1.9"
+  source                   = "git::https://github.com/terraform-ibm-modules/terraform-ibm-cos?ref=v8.4.1"
   resource_group_id        = local.resource_group_id
   region                   = var.region
   bucket_name              = "${local.prefix}-${local.vpc_zones[0].zone}-worker-collector-bucket"
